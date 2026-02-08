@@ -2,7 +2,8 @@ name: kojo-stack
 
 services:
   kojo-stack:
-    image: kojo-stack
+    image: docker.jojoaddison.net/kojo-stack:2026.01.3
+    hostname: kojo-stack-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,6 +12,7 @@ services:
       - "4800:80"
     environment:
       - NODE_ENV=production
+      - production=true
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]

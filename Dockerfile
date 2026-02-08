@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Build Angular application for production
-RUN npm run build
+RUN npm run build:prod
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine

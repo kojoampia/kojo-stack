@@ -1,6 +1,8 @@
-// These constants are injected via webpack environment variables.
-// You can add more variables in webpack.common.js or in profile specific webpack.<dev|prod>.js files.
-// If you change the values in the webpack config files, you need to re run webpack to update the application
+// Application constants
+// Uses Angular environment files for environment-specific values (environment.ts / environment.prod.ts)
+// Fallback to webpack-injected globals for backward compatibility
+
+import { environment } from '../environments/environment';
 
 declare const VERSION: string;
 declare const DEBUG_INFO_ENABLED: boolean;
@@ -11,9 +13,9 @@ declare const BUILD_TIMESTAMP: string;
 
 // Provide fallback values if webpack doesn't inject them
 const VERSION_FALLBACK = '2026.1.0';
-const DEBUG_INFO_ENABLED_FALLBACK = true;
+const DEBUG_INFO_ENABLED_FALLBACK = !environment.production;
 const MOCK_MODE_ENABLED_FALLBACK = false;
-const SERVER_API_URL_FALLBACK = 'http://localhost:8085';
+const SERVER_API_URL_FALLBACK = environment.apiUrl;
 const KS_DASHBOARD_URL_FALLBACK = '/api/v1/auth';
 const BUILD_TIMESTAMP_FALLBACK = new Date().toISOString();
 
