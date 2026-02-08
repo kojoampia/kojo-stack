@@ -1,0 +1,1 @@
+{"ast":null,"code":"export * from './sidebar.component';\nexport * from './header.component';\nexport * from './footer.component';","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

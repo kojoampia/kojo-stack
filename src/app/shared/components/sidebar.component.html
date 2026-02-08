@@ -1,0 +1,71 @@
+<nav class="w-full md:w-20 lg:w-64 h-screen bg-slate-950 border-r border-slate-800 flex flex-col justify-between shrink-0 overflow-hidden">
+  <!-- Top Section: Logo & Navigation -->
+  <div class="flex flex-col flex-1">
+    <div class="p-6 flex items-center gap-3">
+      <!-- Avatar with Fallback Logic -->
+      <div class="relative w-12 h-12 shrink-0">
+        <img 
+          src="assets/kojo-ampia-addison.jpeg" 
+          alt="John Kojo"
+          class="w-full h-full rounded-full object-cover border-2 border-cyan-500 shadow-lg shadow-cyan-500/20"
+          [class.hidden]="avatarError()"
+          (error)="onAvatarError()"
+        >
+      <div 
+        *ngIf="avatarError()" 
+        class="w-full h-full rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20 border-2 border-cyan-500/50"
+      >
+          JK
+        </div>
+      </div>
+      <span class="font-bold text-lg tracking-tight hidden lg:block text-slate-100">Kojo.Stack</span>
+    </div>
+
+    <div class="px-3 py-2 space-y-1 flex-1">
+      @for (view of navItems; track view) {
+        <button 
+          (click)="onNavClick(view)"
+          [ngClass]="currentView() === view ? 'bg-blue-600/10 text-cyan-400 border-l-4 border-cyan-400' : 'border-l-4 border-transparent text-slate-400 hover:text-slate-200'"
+          class="w-full text-left px-4 py-3 rounded-r transition-all hover:bg-slate-900 text-sm font-medium flex items-center gap-3 group"
+        >
+          <i class="fas fa-circle text-[8px] opacity-50 group-hover:text-cyan-400 transition-colors"></i>
+          <span class="hidden lg:block">{{ view }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Bottom Section: System Health & Admin -->
+  <div class="p-3 md:p-6 flex-shrink-0">
+    <div class="bg-slate-900 rounded p-3 md:p-4 border border-slate-800 hidden md:block">
+      <div class="text-xs text-slate-500 uppercase font-semibold mb-2">System Health</div>
+      <div class="flex items-center gap-2 text-green-400 text-sm font-bold">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+        </span>
+        Operational
+      </div>
+      <div class="mt-2 text-xs text-slate-400">Uptime: 99.99%</div>
+      
+      <!-- Admin Button -->
+      <button 
+        *ngIf="!isLoggedIn()"
+        (click)="onAdminClick()"
+        class="w-full mt-4 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-xs font-semibold rounded transition-all duration-200 flex items-center justify-center gap-2"
+        title="Admin Dashboard">
+        <span>⚙️</span>
+        <span>Admin</span>
+      </button>
+
+      <!-- Logout Button -->
+      <button 
+        *ngIf="isLoggedIn()"
+        (click)="onLogout()"
+        class="w-full mt-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded transition-all duration-200"
+        title="Logout">
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>

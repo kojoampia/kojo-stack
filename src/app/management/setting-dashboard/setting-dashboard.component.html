@@ -1,0 +1,115 @@
+<div class="model-dashboard">
+  <!-- Back to Admin Button -->
+  <div class="nav-header">
+    <a routerLink="/management" class="btn btn-back">
+      ← Back to Admin Dashboard
+    </a>
+  </div>
+
+  <div class="dashboard-header">
+    <h1>⚙️ {{ modelName }} Management</h1>
+    <button class="btn btn-primary" (click)="createItem()" [disabled]="loading">
+      Add New {{ modelName }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="close-btn" (click)="error = null">×</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    Loading...
+  </div>
+
+  <div *ngIf="currentAction === 'list' && !loading" class="list-view">
+    <div *ngIf="items.length === 0" class="empty-state">
+      <p>No {{ modelName | lowercase }}s found</p>
+      <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+    </div>
+
+    <div class="items-table" *ngIf="items.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Verbose Logging</th>
+            <th>Beta Features</th>
+            <th>Theme</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items" [class.selected]="selectedItem?.id === item.id">
+            <td>{{ item.id }}</td>
+            <td><span class="badge" [class.badge-success]="item.verboseLogging" [class.badge-default]="!item.verboseLogging">{{ item.verboseLogging ? 'Yes' : 'No' }}</span></td>
+            <td><span class="badge" [class.badge-success]="item.betaFeatures" [class.badge-default]="!item.betaFeatures">{{ item.betaFeatures ? 'Yes' : 'No' }}</span></td>
+            <td>{{ item.theme }}</td>
+            <td class="actions">
+              <button class="btn btn-sm btn-info" (click)="editItem(item)">Edit</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="(isCreating || isUpdating) && !loading" class="form-view">
+    <div class="form-header">
+      <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
+    </div>
+
+    <form class="form">
+      <div class="form-group">
+        <label for="verboseLogging">Verbose Logging</label>
+        <input 
+          id="verboseLogging" 
+          type="checkbox" 
+          [(ngModel)]="formData.verboseLogging"
+          name="verboseLogging">
+      </div>
+
+      <div class="form-group">
+        <label for="betaFeatures">Beta Features</label>
+        <input 
+          id="betaFeatures" 
+          type="checkbox" 
+          [(ngModel)]="formData.betaFeatures"
+          name="betaFeatures">
+      </div>
+
+      <div class="form-group">
+        <label for="theme">Theme</label>
+        <select 
+          id="theme" 
+          class="form-control" 
+          [(ngModel)]="formData.theme"
+          name="theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="auto">Auto</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-primary" (click)="saveItem()">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="isDeleting && !loading" class="delete-confirmation">
+    <div class="confirmation-dialog">
+      <h2>Delete {{ modelName }}</h2>
+      <p>Are you sure you want to delete this setting?</p>
+      <p class="item-info">{{ selectedItem?.id }}</p>
+      
+      <div class="confirmation-actions">
+        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        <button class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

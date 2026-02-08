@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+dist/
+out-tsc/
+
+# Environment files (keep .example)
+.env
+.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build
+angular.json.bak
+
+# Development
+npm-debug.log*
+yarn-error.log*

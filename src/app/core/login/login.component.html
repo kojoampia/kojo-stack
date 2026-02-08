@@ -1,0 +1,116 @@
+<div class="login-container">
+  <!-- Background Animation -->
+  <div class="background-animation">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Error Overlay Alert -->
+   @if(isLoginError) {
+  <div class="error-overlay">
+    <div class="error-alert">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <div class="error-content">
+        <h2>Login Failed</h2>
+        <p>{{ error }}</p>
+      </div>
+      <button class="error-close" (click)="clearError()" title="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+   }
+  <div class="login-card">
+    <!-- Header -->
+    <div class="login-header">
+      <div class="logo-circle">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h1>Kojo.Stack</h1>
+      <p>Administration Login</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form" (ngSubmit)="onLogin()">
+      <!-- Username Input -->
+      <div class="form-group">
+        <label for="username">
+          <i class="fas fa-user"></i> Username
+        </label>
+        <input
+          id="username"
+          type="text"
+          class="form-control"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Enter your username"
+          [disabled]="loading"
+          required
+          autofocus
+        />
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i> Password
+        </label>
+        <div class="password-input-group">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter your password"
+            [disabled]="loading"
+            (keypress)="onKeyPress($event)"
+            required
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            [disabled]="loading"
+            tabindex="-1"
+          >
+            <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-login"
+        [disabled]="loading"
+        [class.loading]="loading"
+      >
+        <span *ngIf="!loading">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </span>
+        <span *ngIf="loading">
+          <i class="fas fa-spinner fa-spin"></i> Logging in...
+        </span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p class="hint">
+        <i class="fas fa-info-circle"></i>
+        Admin credentials required!
+      </p>
+    </div>
+  </div>
+
+  <!-- Background Animation -->
+  <div class="background-animation">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+</div>

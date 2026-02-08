@@ -1,0 +1,193 @@
+<div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div class="flex justify-between items-center">
+    <h2 class="text-xl font-bold text-slate-100 flex items-center gap-3">
+      <i class="fas fa-briefcase text-cyan-500"></i>
+      Consulting Engagement
+    </h2>
+    <div class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full" [ngClass]="{'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]': highLoad(), 'bg-amber-500': !highLoad()}"></span>
+      <span class="text-xs font-mono text-slate-400">{{ highLoad() ? 'High Load - Waitlist' : 'Available for engagement' }}</span>
+    </div>
+  </div>
+
+  <!-- Payment Modal Overlay -->
+  @if (showPaymentStep()) {
+    <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-300">
+      <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <i class="fab fa-paypal text-blue-500"></i> Payment Required
+          </h3>
+          <button (click)="cancelPayment()" class="text-slate-400 hover:text-slate-200 transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-slate-400">Inquiry Fee</span>
+            <span class="text-xl font-bold text-cyan-400">€{{ INQUIRY_FEE }}</span>
+          </div>
+          <p class="text-xs text-slate-500">One-time fee to process your consulting request. This helps ensure quality engagements.</p>
+        </div>
+
+        <!-- Summary of inquiry -->
+        <div class="bg-slate-950/50 border border-slate-800 rounded-lg p-3 mb-4 text-xs">
+          <div class="text-slate-500 uppercase font-bold mb-2">Inquiry Summary</div>
+          <div class="space-y-1 text-slate-400">
+            <div><span class="text-slate-500">Client:</span> {{ inquiry.name }}</div>
+            <div><span class="text-slate-500">Email:</span> {{ inquiry.email }}</div>
+            <div><span class="text-slate-500">Type:</span> {{ inquiry.type }}</div>
+          </div>
+        </div>
+
+        <!-- Payment Status -->
+        @if (paymentInProgress()) {
+          <div class="flex items-center justify-center gap-2 py-4 text-cyan-400">
+            <i class="fas fa-spinner animate-spin"></i>
+            <span>Processing payment...</span>
+          </div>
+        }
+
+        @if (paymentCompleted()) {
+          <div class="bg-green-900/30 border border-green-700 rounded-lg p-4 mb-4 animate-in fade-in duration-300">
+            <div class="flex items-center gap-2 text-green-400 mb-2">
+              <i class="fas fa-check-circle"></i>
+              <span class="font-bold">Payment Successful!</span>
+            </div>
+            <p class="text-xs text-green-500">Transaction ID: {{ transactionId() }}</p>
+          </div>
+          <button (click)="submitInquiry()" class="w-full px-4 py-3 rounded bg-cyan-600 hover:bg-cyan-700 text-white border border-cyan-500 transition-all text-sm font-bold flex items-center justify-center gap-2 group">
+            <i class="fas fa-paper-plane"></i> Submit Inquiry Now
+            <span class="group-hover:translate-x-1 transition-transform">→</span>
+          </button>
+        } @else {
+          <!-- PayPal Button Container -->
+          <div #paypalButtonContainer class="paypal-button-container min-h-[150px]"></div>
+        }
+
+        @if (paymentError()) {
+          <div class="mt-4 bg-red-900/30 border border-red-700 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ paymentError() }}
+          </div>
+        }
+
+        <button (click)="cancelPayment()" class="w-full mt-4 px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all text-sm">
+          Cancel
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Contract Form -->
+  <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-6">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-bold text-slate-100">New Engagement</h3>
+      <div class="flex items-center gap-2 text-xs text-slate-500">
+        <i class="fab fa-paypal text-blue-500"></i>
+        <span>€{{ INQUIRY_FEE }} inquiry fee applies</span>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs uppercase text-slate-500 font-bold tracking-wider block mb-2">Client Name <span class="text-red-500">*</span></label>
+        <input type="text" [(ngModel)]="inquiry.name" placeholder="Your Organization" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-500 focus:outline-none transition-colors text-sm placeholder-slate-600" />
+      </div>
+      <div>
+        <label class="text-xs uppercase text-slate-500 font-bold tracking-wider block mb-2">Email <span class="text-red-500">*</span></label>
+        <input type="email" [(ngModel)]="inquiry.email" placeholder="contact&#64;organization.com" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-500 focus:outline-none transition-colors text-sm placeholder-slate-600" />
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs uppercase text-slate-500 font-bold tracking-wider block mb-3">Engagement Type <span class="text-red-500">*</span></label>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <button (click)="selectEngagementType('Architecture')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'Architecture', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'Architecture'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">ARCHITECTURE</button>
+        <button (click)="selectEngagementType('Microservices')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'Microservices', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'Microservices'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">MICROSERVICES</button>
+        <button (click)="selectEngagementType('DevOps')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'DevOps', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'DevOps'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">DEVOPS</button>
+        <button (click)="selectEngagementType('Mentoring')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'Mentoring', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'Mentoring'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">MENTORING</button>
+        <button (click)="selectEngagementType('Code Review')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'Code Review', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'Code Review'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">CODE REVIEW</button>
+        <button (click)="selectEngagementType('Migration')" [ngClass]="{'bg-cyan-600 border-cyan-500 text-white': inquiry.type === 'Migration', 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600': inquiry.type !== 'Migration'}" class="px-3 py-2 rounded border transition-all text-xs font-bold">MIGRATION</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs uppercase text-slate-500 font-bold tracking-wider block mb-2">Project Scope <span class="text-red-500">*</span></label>
+      <textarea [(ngModel)]="inquiry.message" placeholder="Describe your project needs and timeline..." rows="4" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-500 focus:outline-none transition-colors text-sm placeholder-slate-600 resize-none"></textarea>
+    </div>
+
+    @if (paymentError() && !showPaymentStep()) {
+      <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ paymentError() }}
+      </div>
+    }
+
+    <button (click)="proceedToPayment()" [disabled]="!isFormValid()" [ngClass]="{'opacity-50 cursor-not-allowed': !isFormValid()}" class="w-full px-4 py-3 rounded bg-cyan-600 hover:bg-cyan-700 text-white border border-cyan-500 transition-all text-sm font-bold flex items-center justify-center gap-2 group">
+      <i class="fab fa-paypal"></i> Proceed to Payment (€{{ INQUIRY_FEE }})
+      <span class="group-hover:translate-x-1 transition-transform">→</span>
+    </button>
+    
+    <p class="text-xs text-slate-500 text-center">
+      <i class="fas fa-lock text-slate-600"></i> Secure payment processed via PayPal. Your inquiry will be submitted after payment confirmation.
+    </p>
+  </div>
+
+  <!-- Core Services -->
+  <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
+    <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+      <i class="fas fa-star text-amber-500"></i> Core Services
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 bg-slate-950/50 rounded border border-slate-800 hover:border-slate-700 transition-colors">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-8 w-8 rounded bg-slate-800 flex items-center justify-center text-cyan-500"><i class="fas fa-cube"></i></div>
+          <span class="font-bold text-slate-200">Architecture Design</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">Domain-driven design, event-driven architectures, and system scalability patterns.</p>
+      </div>
+
+      <div class="p-4 bg-slate-950/50 rounded border border-slate-800 hover:border-slate-700 transition-colors">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-8 w-8 rounded bg-slate-800 flex items-center justify-center text-purple-500"><i class="fas fa-network-wired"></i></div>
+          <span class="font-bold text-slate-200">Microservices</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">Service isolation, API design, distributed tracing, and resilience patterns.</p>
+      </div>
+
+      <div class="p-4 bg-slate-950/50 rounded border border-slate-800 hover:border-slate-700 transition-colors">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-8 w-8 rounded bg-slate-800 flex items-center justify-center text-green-500"><i class="fas fa-truck"></i></div>
+          <span class="font-bold text-slate-200">DevOps &amp; Infrastructure</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">Kubernetes orchestration, CI/CD pipelines, infrastructure-as-code, and cloud platforms.</p>
+      </div>
+
+      <div class="p-4 bg-slate-950/50 rounded border border-slate-800 hover:border-slate-700 transition-colors">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-8 w-8 rounded bg-slate-800 flex items-center justify-center text-orange-500"><i class="fas fa-code-branch"></i></div>
+          <span class="font-bold text-slate-200">Technical Mentorship</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">Team coaching, engineering best practices, and technology roadmapping.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Availability Widget -->
+  <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-lg p-6">
+    <div class="flex items-center gap-4">
+      <div class="flex-1">
+        <h3 class="text-lg font-bold text-slate-100 mb-1">Typical Response</h3>
+        <p class="text-sm text-slate-400">Responses to inquiries within 24-48 business hours</p>
+      </div>
+      <div class="text-right">
+        <div class="h-12 w-12 rounded-full bg-slate-800 border-2 border-cyan-500 flex items-center justify-center text-cyan-400 font-bold">24</div>
+        <div class="text-xs text-slate-500 mt-1">hours</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,200 @@
+<div class="model-dashboard">
+  <!-- Back to Admin Button -->
+  <div class="nav-header">
+    <a routerLink="/management" class="btn btn-back">
+      ← Back to Admin Dashboard
+    </a>
+  </div>
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>📧 {{ modelName }} Management</h1>
+    <div class="header-actions">
+      <select class="form-control status-filter" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
+        <option value="All">All Status</option>
+        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      </select>
+      <button 
+        class="btn btn-primary" 
+        (click)="createItem()"
+        [disabled]="loading">
+        + Add New {{ modelName }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="close-btn" (click)="error = null">×</button>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    Loading...
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="currentAction === 'list' && !loading" class="list-view">
+    <div *ngIf="filteredItems.length === 0" class="empty-state">
+      <p>No {{ modelName | lowercase }}s found</p>
+      <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+    </div>
+
+    <div class="inquiries-grid" *ngIf="filteredItems.length > 0">
+      <div class="inquiry-card" *ngFor="let item of filteredItems" 
+           [ngClass]="getStatusClass(item.status)"
+           [class.selected]="selectedItem?.id === item.id">
+        <div class="card-header">
+          <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
+          <span class="type-badge" [ngClass]="getTypeClass(item.type)">{{ item.type }}</span>
+        </div>
+        <div class="card-body">
+          <h3>{{ item.name }}</h3>
+          <p class="email">{{ item.email }}</p>
+          <p class="message">{{ item.message | slice:0:100 }}{{ item.message.length > 100 ? '...' : '' }}</p>
+          <div class="created-at" *ngIf="item.createdAt">
+            <span class="label">Received:</span>
+            <span class="date">{{ item.createdAt }}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-sm btn-view" (click)="viewItem(item)">View</button>
+          <button class="btn btn-sm btn-info" (click)="editItem(item)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="isViewing && detailItem" class="detail-view">
+    <div class="detail-header">
+      <div class="header-top">
+        <span class="status-badge" [ngClass]="getStatusClass(detailItem.status)">{{ detailItem.status }}</span>
+        <span class="type-badge" [ngClass]="getTypeClass(detailItem.type)">{{ detailItem.type }}</span>
+      </div>
+      <h2>{{ detailItem.name }}</h2>
+    </div>
+    
+    <div class="detail-content">
+      <div class="detail-section">
+        <label>Email</label>
+        <p><a href="mailto:{{ detailItem.email }}">{{ detailItem.email }}</a></p>
+      </div>
+      
+      <div class="detail-section">
+        <label>Project Type</label>
+        <p>{{ detailItem.type }}</p>
+      </div>
+      
+      <div class="detail-section">
+        <label>Received Date</label>
+        <p>{{ detailItem.createdAt }}</p>
+      </div>
+      
+      <div class="detail-section message-section">
+        <label>Message</label>
+        <div class="message-content">
+          <p>{{ detailItem.message }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-actions">
+      <button class="btn btn-info" (click)="editItem(detailItem)">Edit</button>
+      <a class="btn btn-primary" href="mailto:{{ detailItem.email }}?subject=Re: Consulting Inquiry">Reply via Email</a>
+      <button class="btn btn-secondary" (click)="cancelAction()">Back to List</button>
+    </div>
+  </div>
+
+  <!-- Create/Update Form -->
+  <div *ngIf="(isCreating || isUpdating) && !loading" class="form-view">
+    <div class="form-header">
+      <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
+    </div>
+
+    <form class="form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input 
+            id="name" 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="e.g., John Smith"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            id="email" 
+            type="email" 
+            class="form-control" 
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="e.g., john@example.com"
+            required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="type">Project Type</label>
+          <select 
+            id="type" 
+            class="form-control" 
+            [(ngModel)]="formData.type"
+            name="type">
+            <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select 
+            id="status" 
+            class="form-control" 
+            [(ngModel)]="formData.status"
+            name="status">
+            <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea 
+          id="message" 
+          class="form-control" 
+          [(ngModel)]="formData.message"
+          name="message"
+          rows="5"
+          placeholder="Enter the inquiry message..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-primary" (click)="saveItem()">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div *ngIf="isDeleting && !loading" class="delete-confirmation">
+    <div class="confirmation-dialog">
+      <h2>Delete {{ modelName }}</h2>
+      <p>Are you sure you want to delete this inquiry?</p>
+      <p class="item-info">{{ selectedItem?.name }} ({{ selectedItem?.email }})</p>
+      
+      <div class="confirmation-actions">
+        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        <button class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

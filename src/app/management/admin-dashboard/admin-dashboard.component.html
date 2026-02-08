@@ -1,0 +1,23 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Administration Dashboard</h1>
+    <p>Manage all system models and configurations</p>
+  </div>
+
+  <div class="menu-grid">
+    <div *ngFor="let item of menuItems" class="menu-card" [ngClass]="'card-' + item.color">
+      <a [routerLink]="item.route" class="card-link">
+        <div class="card-icon">
+          <span class="icon">{{ item.emoji }}</span>
+        </div>
+        <div class="card-content">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.description }}</p>
+        </div>
+        <div class="card-arrow">
+          <span>→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

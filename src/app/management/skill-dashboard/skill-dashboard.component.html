@@ -1,0 +1,190 @@
+<div class="model-dashboard">
+  <!-- Back to Admin Button -->
+  <div class="nav-header">
+    <a routerLink="/management" class="btn btn-back">
+      ← Back to Admin Dashboard
+    </a>
+  </div>
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>🎓 {{ modelName }} Management</h1>
+    <div class="header-actions">
+      <select class="form-control category-filter" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="All">All Categories</option>
+        <option *ngFor="let cat of categoryOptions" [value]="cat">{{ cat }}</option>
+      </select>
+      <button 
+        class="btn btn-primary" 
+        (click)="createItem()"
+        [disabled]="loading">
+        + Add New {{ modelName }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="close-btn" (click)="error = null">×</button>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    Loading...
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="currentAction === 'list' && !loading" class="list-view">
+    <div *ngIf="filteredItems.length === 0" class="empty-state">
+      <p>No {{ modelName | lowercase }}s found</p>
+      <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+    </div>
+
+    <div class="skills-grid" *ngIf="filteredItems.length > 0">
+      <div class="skill-card" *ngFor="let item of filteredItems" 
+           [ngClass]="getCategoryClass(item.category)"
+           [class.selected]="selectedItem?.name === item.name">
+        <div class="card-header">
+          <span class="category-badge" [ngClass]="getCategoryClass(item.category)">{{ item.category }}</span>
+        </div>
+        <div class="card-body">
+          <div class="skill-icon">{{ item.icon || '🔧' }}</div>
+          <h3>{{ item.name }}</h3>
+          <div class="skill-level">
+            <div class="level-bar">
+              <div class="level-fill" [style.width.%]="item.level" [ngClass]="getLevelClass(item.level)"></div>
+            </div>
+            <span class="level-text">{{ item.level }}%</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-sm btn-view" (click)="viewItem(item)">View</button>
+          <button class="btn btn-sm btn-info" (click)="editItem(item)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="isViewing && detailItem" class="detail-view">
+    <div class="detail-header">
+      <div class="skill-icon-large">{{ detailItem.icon || '🔧' }}</div>
+      <h2>{{ detailItem.name }}</h2>
+      <span class="category-badge" [ngClass]="getCategoryClass(detailItem.category)">{{ detailItem.category }}</span>
+    </div>
+    
+    <div class="detail-content">
+      <div class="detail-section">
+        <label>Proficiency Level</label>
+        <div class="skill-level-detail">
+          <div class="level-bar-large">
+            <div class="level-fill" [style.width.%]="detailItem.level" [ngClass]="getLevelClass(detailItem.level)"></div>
+          </div>
+          <div class="level-info">
+            <span class="level-percentage">{{ detailItem.level }}%</span>
+            <span class="level-label" [ngClass]="getLevelClass(detailItem.level)">
+              {{ detailItem.level >= 90 ? 'Expert' : detailItem.level >= 70 ? 'Advanced' : detailItem.level >= 50 ? 'Intermediate' : 'Beginner' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <label>Category</label>
+        <p>{{ detailItem.category }}</p>
+      </div>
+    </div>
+    
+    <div class="detail-actions">
+      <button class="btn btn-info" (click)="editItem(detailItem)">Edit</button>
+      <button class="btn btn-secondary" (click)="cancelAction()">Back to List</button>
+    </div>
+  </div>
+
+  <!-- Create/Update Form -->
+  <div *ngIf="(isCreating || isUpdating) && !loading" class="form-view">
+    <div class="form-header">
+      <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
+    </div>
+
+    <form class="form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Skill Name *</label>
+          <input 
+            id="name" 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="e.g., Java 21, Angular 17"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select 
+            id="category" 
+            class="form-control" 
+            [(ngModel)]="formData.category"
+            name="category">
+            <option *ngFor="let cat of categoryOptions" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="level">Proficiency Level ({{ formData.level }}%)</label>
+          <input 
+            id="level" 
+            type="range" 
+            class="form-control range-input" 
+            [(ngModel)]="formData.level"
+            name="level"
+            min="0"
+            max="100"
+            step="5">
+          <div class="level-preview">
+            <div class="level-bar">
+              <div class="level-fill" [style.width.%]="formData.level" [ngClass]="getLevelClass(formData.level || 0)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="icon">Icon (emoji or icon name)</label>
+          <input 
+            id="icon" 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="formData.icon"
+            name="icon"
+            placeholder="e.g., ☕, 🅰️, 🐳">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-primary" (click)="saveItem()">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div *ngIf="isDeleting && !loading" class="delete-confirmation">
+    <div class="confirmation-dialog">
+      <h2>Delete {{ modelName }}</h2>
+      <p>Are you sure you want to delete this skill?</p>
+      <p class="item-info">{{ selectedItem?.name }} ({{ selectedItem?.category }})</p>
+      
+      <div class="confirmation-actions">
+        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        <button class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
