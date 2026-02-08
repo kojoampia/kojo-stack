@@ -2,7 +2,7 @@ name: kojo-stack
 
 services:
   kojo-stack:
-    image: docker.jojoaddison.net/kojo-stack:2026.01.3
+    image: docker.jojoaddison.net/kojo-stack:2026.01.1
     hostname: kojo-stack-app
     build:
       context: .
