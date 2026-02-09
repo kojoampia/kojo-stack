@@ -12,7 +12,8 @@ export class SettingsService {
     id: 'default',
     verboseLogging: true,
     betaFeatures: false,
-    theme: 'default'
+    theme: 'default',
+    language: 'en'
   });
 
   constructor(private http: HttpClient) {}
