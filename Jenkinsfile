@@ -17,17 +17,21 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/kojoampia/kojo-stack.git',
-                branch: 'main',
-                credentialsId: GIT_CREDENTIALS_ID
+        /**
+            stage('Checkout') {
+                steps {
+                    git url: 'https://github.com/kojoampia/kojo-stack.git',
+                    branch: 'main',
+                    credentialsId: GIT_CREDENTIALS_ID
+                }
             }
-        }
+        */
         stage('Build and Push Docker Image') {
             steps {
                 script {
                     def imageName = "${REGISTRY}/${IMAGE_NAME}"
+                    def imageURL = "${imageName}:${env.BUILD_NUMBER}"
+                    echo "${imageURL}"
                     sh "docker build -t ${imageName}:${env.BUILD_NUMBER} ."
                     withCredentials([usernamePassword(credentialsId: REGISTRY_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin https://${REGISTRY}"
