@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Executive Webcast Strategy: Turning Experience into Authority</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Design Palette: Professional Authority (Navy, Cyan, Gold) -->
+    <!-- Palette Name: Executive Blue & Gold -->
+    <!-- 
+        Primary: #1e3a8a (Blue-900)
+        Accent 1: #06b6d4 (Cyan-500)
+        Accent 2: #d97706 (Amber-600)
+        Background: #f8fafc (Slate-50)
+        Text: #0f172a (Slate-900)
+    -->
+
+    <style>
+        /* Custom Font Imports - using system fonts for performance and clean look */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* Chart Container Rules - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            /* Default height for mobile */
+            height: 300px;
+            /* Max height to prevent vertical scrolling issues */
+            max-height: 400px;
+        }
+
+        /* Responsive Chart Heights */
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Scrollbar for a polished feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Utility for Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    <!-- 
+    Source Material Analysis Plan:
+    1. Narrative: Start with the "Why" (Authority), move to the "How much" (Investment), then "What you get" (Revenue), and finally "What to do" (Operations).
+    2. Data Points:
+       - Investment: $3875 breakdown (Donut)
+       - Revenue Growth: 6mo/1yr/3yr (Line/Area)
+       - Revenue Composition: Consulting vs Sponsorship vs Products (Stacked Bar)
+       - Roadmap: Day 1/Week 1/Week 2 (Timeline)
+    3. NO SVG / NO Mermaid Confirmation: Checked.
+    -->
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-gradient-to-r from-blue-900 to-slate-900 text-white py-16 px-6 shadow-xl">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
+                The Executive Webcast Strategy
+            </h1>
+            <p class="text-xl md:text-2xl text-cyan-400 font-medium max-w-3xl mx-auto">
+                Turning Decades of Experience into Digital Authority
+            </p>
+            <div class="mt-8 flex justify-center gap-4 flex-wrap">
+                <span class="px-4 py-2 bg-white/10 rounded-full text-sm font-semibold border border-white/20">Target: 50+ Professionals</span>
+                <span class="px-4 py-2 bg-white/10 rounded-full text-sm font-semibold border border-white/20">Goal: Category King</span>
+                <span class="px-4 py-2 bg-white/10 rounded-full text-sm font-semibold border border-white/20">Strategy: Niche Authority</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
+
+        <!-- Introduction Section -->
+        <section class="md:col-span-12 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-8 border-l-8 border-amber-500">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Why Re-Platform Now?</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    At 50, you possess something the 22-year-old influencers lack: <strong>Intellectual Capital</strong>. 
+                    This business plan isn't about becoming a "YouTuber"; it's about building a <span class="text-blue-700 font-bold">Media Empire</span> 
+                    around your existing reputation. The goal is to solve expensive problems for high-value clients, leveraging a professional "Executive Studio" setup.
+                </p>
+            </div>
+        </section>
+
+        <!-- Visualization 1: Startup Capital (Donut Chart) -->
+        <!-- Goal: Inform/Compare - Showing where the money goes -->
+        <section class="md:col-span-12 lg:col-span-6 flex flex-col">
+            <div class="bg-white rounded-xl shadow-md p-6 flex-1 border border-slate-100">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-blue-900">The Executive Studio Investment</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Total Estimated Cost: <strong>~$3,875</strong>. Unlike a hobbyist setup, this gear (Sony A7C II, Shure SM7B) signals immediate seniority and professionalism.
+                    </p>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="chart-container max-w-lg mx-auto">
+                    <canvas id="investmentChart"></canvas>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-slate-400 italic">Largest expense is the Full Frame Camera to ensure "Pro" visual fidelity.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization 2: Financial Projections (Area Chart) -->
+        <!-- Goal: Change over time - Showing revenue growth -->
+        <section class="md:col-span-12 lg:col-span-6 flex flex-col">
+            <div class="bg-white rounded-xl shadow-md p-6 flex-1 border border-slate-100">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-blue-900">Projected Revenue Trajectory</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Moving from "Authority Building" (Month 6) to "The Network Effect" (Year 1) and finally the "Legacy/Exit Model" (Year 3).
+                    </p>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container max-w-lg mx-auto">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-slate-400 italic">Exponential growth occurs in Year 2-3 as brand authority solidifies.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization 3: Revenue Composition (Stacked Bar) -->
+        <!-- Goal: Compare/Composition - Showing how the business model shifts -->
+        <section class="md:col-span-12">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100">
+                <div class="mb-6 text-center max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-blue-900">Evolution of Revenue Streams</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        In the beginning, you trade time for money (Consulting). As you scale, you trade influence (Sponsorships) and knowledge assets (Products) for money.
+                    </p>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container max-w-4xl mx-auto h-[400px]">
+                    <canvas id="compositionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Operational Roadmap (HTML Timeline) -->
+        <!-- Goal: Organize/Process - No Mermaid, pure HTML/Tailwind -->
+        <section class="md:col-span-12 mt-8">
+            <h3 class="text-3xl font-bold text-center text-blue-900 mb-10">Day 1 to Week 2: Operational Roadmap</h3>
+            
+            <div class="relative max-w-4xl mx-auto">
+                <!-- Vertical Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-slate-200"></div>
+
+                <!-- Item 1: Day 1 -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-between w-full">
+                        <div class="w-5/12 text-right pr-8">
+                            <h4 class="text-xl font-bold text-amber-600">Day 1: Identity & Audit</h4>
+                            <p class="text-slate-600 mt-2 text-sm">Define the "Expensive Problem" you solve. Audit your network for the top 50 influential contacts.</p>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-900 rounded-full border-4 border-white shadow"></div>
+                        <div class="w-5/12 pl-8"></div>
+                    </div>
+                </div>
+
+                <!-- Item 2: Week 1 -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-between w-full flex-row-reverse">
+                        <div class="w-5/12 text-left pl-8">
+                            <h4 class="text-xl font-bold text-cyan-600">Week 1: Tech & Outsourcing</h4>
+                            <p class="text-slate-600 mt-2 text-sm">Buy the "Executive Kit". Hire a consultant for setup. Focus on content, not cables.</p>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-cyan-500 rounded-full border-4 border-white shadow"></div>
+                        <div class="w-5/12 pr-8"></div>
+                    </div>
+                </div>
+
+                <!-- Item 3: Week 2 -->
+                <div class="relative">
+                    <div class="flex items-center justify-between w-full">
+                        <div class="w-5/12 text-right pr-8">
+                            <h4 class="text-xl font-bold text-blue-600">Week 2: Guest Strategy</h4>
+                            <p class="text-slate-600 mt-2 text-sm">Execute outreach. Record Episode 0. Generate "Zero-Click" micro-content for LinkedIn.</p>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-amber-500 rounded-full border-4 border-white shadow"></div>
+                        <div class="w-5/12 pl-8"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Risk Management Cards -->
+        <!-- Goal: Inform/Organize - Using cards and unicode -->
+        <section class="md:col-span-12 mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-xl shadow border-t-4 border-red-500">
+                <div class="text-3xl mb-4 text-red-500">⚠️</div>
+                <h4 class="font-bold text-lg mb-2">The Perfectionism Trap</h4>
+                <p class="text-sm text-slate-600">You have a reputation to protect, leading to analysis paralysis. <strong>Action is the cure.</strong> A published B+ video beats a perfect unreleased one.</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-xl shadow border-t-4 border-cyan-500">
+                <div class="text-3xl mb-4 text-cyan-500">🤖</div>
+                <h4 class="font-bold text-lg mb-2">Leverage AI</h4>
+                <p class="text-sm text-slate-600">Don't edit manually. Use tools like Descript or OpusClip. Your time is worth $500/hr; don't spend it cutting clips.</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-xl shadow border-t-4 border-amber-500">
+                <div class="text-3xl mb-4 text-amber-500">🔋</div>
+                <h4 class="font-bold text-lg mb-2">Energy Management</h4>
+                <p class="text-sm text-slate-600">Consistency > Intensity. Aim for one high-impact weekly show rather than daily burnout posts.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-12 mt-12 text-center">
+        <h2 class="text-2xl font-bold mb-4">Ready to Build Your Legacy?</h2>
+        <p class="max-w-xl mx-auto text-blue-200 mb-8">
+            The market pays a premium for wisdom. You have the stories, the failures, and the wins. Now you have the plan.
+        </p>
+        <div class="text-sm text-blue-400">
+            Generated via Canvas Infographics • Based on "Webcast Business Plan & Roadmap"
+        </div>
+    </footer>
+
+    <!-- Chart.js Scripts -->
+    <script>
+        // --- 1. Label Wrapping Logic (Mandatory for <16 chars) ---
+        function wrapLabels(labels) {
+            return labels.map(label => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if ((currentLine + " " + words[i]).length <= 16) {
+                        currentLine += " " + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            });
+        }
+
+        // --- 2. Tooltip Configuration (Mandatory) ---
+        const commonTooltipOptions = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- 3. Chart Implementations ---
+
+        // Chart 1: Investment Breakdown (Donut)
+        // Data Source: Section 2 "The Executive Professional Kit"
+        const investmentCtx = document.getElementById('investmentChart').getContext('2d');
+        const rawInvLabels = ['Camera (Sony A7C II)', 'Microphone (Shure SM7B)', 'Lighting Kit (3-Point)', 'Audio Interface', 'Software (Yearly Est)', 'Acoustics & Background'];
+        new Chart(investmentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: wrapLabels(rawInvLabels),
+                datasets: [{
+                    data: [2100, 550, 600, 180, 540, 400], // Software $45 * 12 = 540
+                    backgroundColor: [
+                        '#1e3a8a', // Navy
+                        '#0ea5e9', // Sky Blue
+                        '#06b6d4', // Cyan
+                        '#f59e0b', // Amber
+                        '#64748b', // Slate
+                        '#94a3b8'  // Light Slate
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: commonTooltipOptions,
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 10 } }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Total CapEx Breakdown (~$4,370 annualized)',
+                        font: { size: 14, weight: 'bold' }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Chart 2: Revenue Projection (Line/Area)
+        // Data Source: Section 6 "Financial Summary Table"
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: wrapLabels(['Start', 'Month 6', 'Year 1', 'Year 2 (Est)', 'Year 3']),
+                datasets: [{
+                    label: 'Projected Monthly Revenue ($)',
+                    data: [0, 3500, 12000, 25000, 40000],
+                    borderColor: '#0ea5e9', // Sky Blue
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#d97706', // Amber dots
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: commonTooltipOptions,
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Monthly Revenue Growth Curve',
+                        font: { size: 14 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return '$' + value; }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 3: Revenue Composition (Stacked Bar)
+        // Data Source: Section 3 "Financial Projections: The Authority Model" (inferred percentages)
+        const compositionCtx = document.getElementById('compositionChart').getContext('2d');
+        new Chart(compositionCtx, {
+            type: 'bar',
+            data: {
+                labels: wrapLabels(['Phase 1 (Month 0-6)', 'Phase 2 (Year 1)', 'Phase 3 (Year 3)']),
+                datasets: [
+                    {
+                        label: 'Consulting & Speaking',
+                        data: [90, 40, 20], // High initially, decreases percentagewise
+                        backgroundColor: '#1e3a8a', // Navy
+                    },
+                    {
+                        label: 'Sponsorships',
+                        data: [10, 40, 30], // Grows in Phase 2
+                        backgroundColor: '#0ea5e9', // Sky Blue
+                    },
+                    {
+                        label: 'Products & Masterminds',
+                        data: [0, 20, 50], // The ultimate scaling engine
+                        backgroundColor: '#d97706', // Amber
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: commonTooltipOptions,
+                    title: {
+                        display: true,
+                        text: 'Revenue Source Mix (%)',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { 
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: function(value) { return value + '%'; } }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

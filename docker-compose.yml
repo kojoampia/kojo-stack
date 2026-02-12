@@ -2,12 +2,12 @@ name: kojo-stack
 
 services:
   kojo-stack:
-    image: docker.jojoaddison.net/kojo-stack:2026.01.1
+    image: docker.jojoaddison.net/kojo-stack:2026.01.5
+    container_name: kojo-stack-app
     hostname: kojo-stack-app
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kojo-stack-app
     ports:
       - "4800:80"
     environment:

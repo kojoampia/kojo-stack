@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Webcast Strategy | The Authority Roadmap</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Professional Authority -->
+    <!-- 
+        Primary: #1e3a8a (Navy Blue) - Trust, Authority
+        Secondary: #06b6d4 (Cyan) - Tech, Future, Clarity
+        Accent: #d97706 (Gold/Amber) - Value, Premium, Success
+        Background: #f8fafc (Slate 50) - Clean, Professional
+    -->
+
+    <style>
+        /* Base Settings */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            /* Responsive Heights */
+            height: 300px; /* Mobile base */
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Timeline Connector */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 24px;
+            width: 2px;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+    </style>
+
+    <!-- Application Structure Plan:
+        1. Hero Section: Executive summary and vision statement.
+        2. Investment Analysis: Donut chart breaking down the $3,875 startup capital.
+        3. Financial Trajectory: Line chart showing revenue growth over 3 years.
+        4. Revenue Composition: Stacked bar chart showing the shift from Consulting -> Products.
+        5. Content Pillars: Radar chart visualizing the 4 quarters of the 52-week roadmap.
+        6. Operational Roadmap: Vertical timeline for Day 1 to Week 2 launch activities.
+        7. Risk Management: Cards for key pitfalls.
+    -->
+    
+    <!-- Visualization & Content Choices:
+        - Investment: Donut Chart -> Goal: Inform -> Best for showing parts of a whole (budget allocation).
+        - Growth: Line Chart -> Goal: Change -> Best for showing trends over time (revenue).
+        - Revenue Mix: Stacked Bar -> Goal: Compare/Composition -> Best for showing how income sources evolve.
+        - Content Pillars: Radar Chart -> Goal: Relationships -> Best for showing the balance of topics across the year.
+        - Roadmap: HTML Timeline -> Goal: Organize -> Best for sequential process steps.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased">
+
+    <!-- Header / Hero -->
+    <header class="bg-gradient-to-r from-blue-900 to-slate-900 text-white py-16 px-4 shadow-xl">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+                The Authority Roadmap
+            </h1>
+            <p class="text-xl md:text-2xl text-cyan-400 font-medium max-w-3xl mx-auto">
+                From Industry Veteran to Category King
+            </p>
+            <p class="mt-4 text-slate-300 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                A strategic blueprint for monetizing 20+ years of expertise through high-production webcasting, consulting, and digital products.
+            </p>
+            <div class="mt-8 flex justify-center gap-4 flex-wrap">
+                <div class="px-4 py-2 bg-white/10 rounded-full border border-white/20 backdrop-blur-sm">
+                    <span class="text-amber-400 font-bold">Target:</span> 50+ Professionals
+                </div>
+                <div class="px-4 py-2 bg-white/10 rounded-full border border-white/20 backdrop-blur-sm">
+                    <span class="text-cyan-400 font-bold">Model:</span> High-Ticket Authority
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-12 space-y-16">
+
+        <!-- Section 1: Capital Investment -->
+        <section>
+            <div class="mb-6 border-l-4 border-amber-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-900">1. The Executive Studio Investment</h2>
+                <p class="text-slate-600 mt-2">
+                    Establishing a "Pro" look requires a targeted capital injection of <strong>~$3,875</strong>. Unlike a hobbyist, we prioritize image quality (Full Frame Camera) and Audio (Broadcast Mic) to signal seniority immediately.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <!-- Chart -->
+                    <div class="chart-container">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                    <!-- Legend/Details -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2">Key Hardware Breakdown</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-900 mr-2"></span>Camera (Sony A7C II)</span>
+                                <span class="font-bold text-slate-700">$2,100</span>
+                            </li>
+                            <li class="flex items-center justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-cyan-500 mr-2"></span>Lighting Kit</span>
+                                <span class="font-bold text-slate-700">$600</span>
+                            </li>
+                            <li class="flex items-center justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>Mic (Shure SM7B + Cloudlifter)</span>
+                                <span class="font-bold text-slate-700">$550</span>
+                            </li>
+                            <li class="flex items-center justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 mr-2"></span>Software (Year 1)</span>
+                                <span class="font-bold text-slate-700">$540</span>
+                            </li>
+                        </ul>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mt-4">
+                            <p class="text-xs text-slate-500 italic">
+                                "At 50, your brand is tied to your reputation. The visual fidelity must match your professional standing."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Financial Trajectory -->
+        <section>
+            <div class="mb-6 border-l-4 border-cyan-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-900">2. Financial Trajectory & Revenue Mix</h2>
+                <p class="text-slate-600 mt-2">
+                    The model shifts from trading time (Consulting) to trading influence (Sponsorships) and finally to trading assets (Products). This creates exponential revenue growth while reducing active work hours.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Revenue Growth Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">Projected Monthly Revenue Growth</h3>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-4">Growth accelerates in Year 2 as the "Network Effect" takes hold.</p>
+                </div>
+
+                <!-- Revenue Composition Chart -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4">Evolution of Income Sources (%)</h3>
+                    <div class="chart-container">
+                        <canvas id="mixChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-4">Goal: 50% of revenue from scalable products by Year 3.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Content Strategy -->
+        <section>
+            <div class="mb-6 border-l-4 border-blue-900 pl-4">
+                <h2 class="text-3xl font-bold text-slate-900">3. The 52-Week Content Engine</h2>
+                <p class="text-slate-600 mt-2">
+                    Authority is built on consistency and depth. The year is divided into 4 strategic quarters, each establishing dominance in a specific domain of your expertise.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Text Description -->
+                    <div class="md:col-span-1 space-y-6">
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <h4 class="font-bold text-blue-900">Q1: Observability</h4>
+                            <p class="text-sm text-slate-600">The "Eyes". Focusing on monitoring, logs, and seeing the unseen.</p>
+                        </div>
+                        <div class="p-4 bg-cyan-50 rounded-lg border border-cyan-100">
+                            <h4 class="font-bold text-cyan-900">Q2: Security</h4>
+                            <p class="text-sm text-slate-600">The "Shield". Cloud security, DevSecOps, and IAM.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-slate-900">Q3: DevOps/GitOps</h4>
+                            <p class="text-sm text-slate-600">The "Engine". Scaling, automation, and infrastructure.</p>
+                        </div>
+                        <div class="p-4 bg-amber-50 rounded-lg border border-amber-100">
+                            <h4 class="font-bold text-amber-800">Q4: Strategy</h4>
+                            <p class="text-sm text-slate-600">The "Vision". Business engineering and leadership.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Chart -->
+                    <div class="md:col-span-2 flex flex-col justify-center">
+                        <div class="chart-container">
+                            <canvas id="contentRadarChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-slate-500 mt-4">
+                            Visualizing the "Balanced Authority" approach across 4 key technical pillars.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Operational Roadmap -->
+        <section>
+            <div class="mb-6 border-l-4 border-slate-800 pl-4">
+                <h2 class="text-3xl font-bold text-slate-900">4. Launch Operations (Day 1 - Week 2)</h2>
+                <p class="text-slate-600 mt-2">
+                    Execution beats perfection. A step-by-step guide to getting the "Executive Studio" live without getting stuck in technical details.
+                </p>
+            </div>
+
+            <div class="relative timeline-line max-w-3xl mx-auto space-y-8 pl-4">
+                
+                <!-- Day 1 -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center border-4 border-white shadow text-white font-bold z-10">D1</div>
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-900">
+                        <h3 class="text-xl font-bold text-blue-900">Day 1: The Domain of Authority</h3>
+                        <ul class="mt-3 space-y-2 text-slate-600 text-sm">
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Define the "Expensive Problem" your content solves.</li>
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Audit your network: Identify top 50 influential contacts.</li>
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Align LinkedIn branding with new Webcast persona.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Week 1 -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center border-4 border-white shadow text-white font-bold z-10">W1</div>
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-cyan-500">
+                        <h3 class="text-xl font-bold text-cyan-700">Week 1: Outsourcing Friction</h3>
+                        <ul class="mt-3 space-y-2 text-slate-600 text-sm">
+                            <li class="flex items-start"><span class="mr-2 text-cyan-500">➤</span> Purchase "Executive Professional" equipment kit.</li>
+                            <li class="flex items-start"><span class="mr-2 text-cyan-500">➤</span> Hire a consultant (5hrs) for technical setup & training.</li>
+                            <li class="flex items-start"><span class="mr-2 text-cyan-500">➤</span> Focus purely on content structure, not cable management.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Week 2 -->
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center border-4 border-white shadow text-white font-bold z-10">W2</div>
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-amber-500">
+                        <h3 class="text-xl font-bold text-amber-700">Week 2: Guest Strategy & Content</h3>
+                        <ul class="mt-3 space-y-2 text-slate-600 text-sm">
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Begin outreach to "Top 50" network for interviews.</li>
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Record "Episode 0" (Pilot) to test workflow.</li>
+                            <li class="flex items-start"><span class="mr-2 text-amber-500">➤</span> Generate "Zero-Click" micro-content for LinkedIn.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Risk Management -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+            <div class="bg-slate-50 p-6 rounded-xl border border-red-200">
+                <div class="text-2xl mb-2">⚠️</div>
+                <h4 class="font-bold text-slate-800">Perfectionism Trap</h4>
+                <p class="text-sm text-slate-600 mt-2">Analysis paralysis is the enemy. A "good" published video beats a "perfect" unreleased one.</p>
+            </div>
+            <div class="bg-slate-50 p-6 rounded-xl border border-blue-200">
+                <div class="text-2xl mb-2">🤖</div>
+                <h4 class="font-bold text-slate-800">Leverage AI</h4>
+                <p class="text-sm text-slate-600 mt-2">Use tools like Descript. Your rate is $500/hr; don't spend it editing silence out of audio.</p>
+            </div>
+            <div class="bg-slate-50 p-6 rounded-xl border border-amber-200">
+                <div class="text-2xl mb-2">🔋</div>
+                <h4 class="font-bold text-slate-800">Energy Mgmt</h4>
+                <p class="text-sm text-slate-600 mt-2">Consistency > Intensity. Aim for one high-impact show per week, not daily burnout.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-12 text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-white text-2xl font-bold mb-4">Build Your Legacy</h2>
+            <p class="mb-8">
+                "You aren't starting from scratch. You are re-platforming."
+            </p>
+            <p class="text-sm text-slate-600">Generated Strategic Dashboard • 2026</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- UTILS ---
+        
+        // 1. Label Wrapping Helper (Mandatory)
+        function wrapLabels(labels) {
+            return labels.map(label => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if ((currentLine + " " + words[i]).length <= 16) {
+                        currentLine += " " + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            });
+        }
+
+        // 2. Tooltip Config (Mandatory)
+        const commonTooltipOptions = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- CHARTS ---
+
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Investment Donut Chart
+            const ctxInv = document.getElementById('investmentChart').getContext('2d');
+            new Chart(ctxInv, {
+                type: 'doughnut',
+                data: {
+                    labels: wrapLabels(['Camera (Sony A7C II)', 'Lighting Kit', 'Mic Setup', 'Audio Interface', 'Software (1 Yr)', 'Acoustics']),
+                    datasets: [{
+                        data: [2100, 600, 550, 180, 540, 400],
+                        backgroundColor: [
+                            '#1e3a8a', // Navy
+                            '#06b6d4', // Cyan
+                            '#3b82f6', // Blue
+                            '#94a3b8', // Slate
+                            '#d97706', // Amber
+                            '#64748b'  // Dark Slate
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: commonTooltipOptions,
+                        title: {
+                            display: true,
+                            text: 'Total CapEx: ~$3,875',
+                            font: { size: 16 }
+                        }
+                    }
+                }
+            });
+
+            // 2. Growth Line Chart
+            const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+            new Chart(ctxGrowth, {
+                type: 'line',
+                data: {
+                    labels: wrapLabels(['Start', 'Month 6', 'Year 1', 'Year 2', 'Year 3']),
+                    datasets: [{
+                        label: 'Monthly Revenue ($)',
+                        data: [0, 3500, 12000, 25000, 40000],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#1e3a8a',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: function(value) { return '$' + value; } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: commonTooltipOptions
+                    }
+                }
+            });
+
+            // 3. Revenue Mix Stacked Bar
+            const ctxMix = document.getElementById('mixChart').getContext('2d');
+            new Chart(ctxMix, {
+                type: 'bar',
+                data: {
+                    labels: wrapLabels(['Month 6', 'Year 1', 'Year 3']),
+                    datasets: [
+                        {
+                            label: 'Consulting',
+                            data: [90, 40, 20],
+                            backgroundColor: '#1e3a8a' // Navy
+                        },
+                        {
+                            label: 'Sponsorships',
+                            data: [10, 40, 30],
+                            backgroundColor: '#06b6d4' // Cyan
+                        },
+                        {
+                            label: 'Products',
+                            data: [0, 20, 50],
+                            backgroundColor: '#d97706' // Amber
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: function(value) { return value + '%'; } }
+                        }
+                    },
+                    plugins: {
+                        tooltip: commonTooltipOptions,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 4. Content Pillars Radar Chart
+            // Based on the 4 Quarters themes
+            const ctxRadar = document.getElementById('contentRadarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: wrapLabels(['Observability (Q1)', 'Cloud Security (Q2)', 'DevOps/GitOps (Q3)', 'Business Strategy (Q4)']),
+                    datasets: [{
+                        label: 'Content Depth',
+                        data: [9, 8, 9, 10], // High scores representing authoritative depth
+                        fill: true,
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)', // Amber tint
+                        borderColor: '#d97706',
+                        pointBackgroundColor: '#1e3a8a',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#1e3a8a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: { display: false } // Hide numbers for cleaner look
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: commonTooltipOptions
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

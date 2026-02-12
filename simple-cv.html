@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Kojo Ampia-Addison | Senior Software Architect & Systems Engineer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Professional Authority (Navy, Cyan, Gold) -->
+    <!-- 
+        Primary: #1e3a8a (Blue-900)
+        Secondary: #06b6d4 (Cyan-500)
+        Accent: #d97706 (Amber-600)
+        Background: #f8fafc (Slate-50)
+        Text: #0f172a (Slate-900)
+    -->
+
+    <style>
+        /* Custom Font settings */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
+            color: #0f172a; /* Slate-900 */
+        }
+
+        /* Chart Container Rules - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            /* Default height */
+            height: 300px;
+            /* Max height constraints */
+            max-height: 400px;
+        }
+
+        /* Responsive adjustments for charts */
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Timeline Connector Line */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px; /* Adjust based on icon size */
+            width: 2px;
+            background-color: #cbd5e1; /* Slate-300 */
+            z-index: 0;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+    </style>
+
+    <!-- Application Structure Plan:
+         1. Hero Section: Introduction, Contact, and Core Value Proposition.
+         2. Metric Dashboard: Quick stats (Years exp, Projects, Stack width).
+         3. Skills & Tech Stack: Radar chart for domains, Bar chart for top tech frequency.
+         4. Experience Timeline: Interactive vertical list. Includes a "Tech Filter" to highlight roles based on stack.
+         5. Education & Languages: Certifications and language proficiency.
+         
+         Key Interaction: Users can click on "Tech Tags" in the experience section or a filter bar to see where that skill was applied.
+    -->
+    
+    <!-- Visualization & Content Choices:
+         1. Radar Chart: To show the balance of his skills (DevOps vs Backend vs DB vs Cloud).
+         2. Bar Chart: To show the specific technologies he uses most often (Java, Spring, K8s).
+         3. Timeline: To visualize his career progression linearly.
+         4. HTML/CSS Cards: For specific project details and "Expertise Pillars".
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-blue-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl tracking-tight">J.K. Ampia-Addison</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium">Overview</a>
+                        <a href="#skills" class="hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium">Skills Analytics</a>
+                        <a href="#experience" class="hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium">Experience</a>
+                        <a href="#education" class="hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium">Education</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="overview" class="relative bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 px-4 sm:px-6 lg:px-8 pt-10">
+                <main class="mt-10 mx-auto max-w-7xl sm:mt-12 md:mt-16 lg:mt-20 xl:mt-28">
+                    <div class="sm:text-center lg:text-left">
+                        <span class="inline-block py-1 px-3 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold tracking-wide uppercase mb-2">Based in Vienna, Austria</span>
+                        <h1 class="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl">
+                            <span class="block xl:inline">John Kojo</span>
+                            <span class="block text-cyan-600 xl:inline">Ampia-Addison</span>
+                        </h1>
+                        <p class="mt-3 text-base text-slate-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            Highly skilled Software Engineer specializing in <strong>Cloud Secured Software</strong> and <strong>Systems Engineering</strong>. Bridging the gap between legacy infrastructure and modern, observable cloud architectures.
+                        </p>
+                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-4">
+                            <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg shadow-sm">
+                                <p class="text-sm font-bold text-blue-900">E: Kojo Ampia-Addison</p>
+                                <p class="text-sm text-slate-600">M: +43 676 922 1796</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-slate-50 border-l border-slate-200 flex items-center justify-center">
+                 <!-- Stats Dashboard -->
+                 <div class="grid grid-cols-2 gap-4 p-8 w-full max-w-lg">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-cyan-500 text-center">
+                        <div class="text-4xl font-bold text-slate-800">14+</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wide mt-1">Years Experience</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900 text-center">
+                        <div class="text-4xl font-bold text-slate-800">8+</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wide mt-1">Key Clients</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-500 text-center col-span-2">
+                        <div class="text-2xl font-bold text-slate-800">Expertise</div>
+                        <div class="text-sm text-slate-500 mt-2">Observability • Cloud Security • GitOps</div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Analytics Section -->
+    <section id="skills" class="py-12 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-blue-900">Technical Proficiency Analytics</h2>
+                <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+                    A visual breakdown of proficiency across engineering domains and specific technology stack usage frequency based on project history.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Radar Chart: Domain Expertise -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Domain Expertise Balance</h3>
+                    <div class="chart-container">
+                        <canvas id="skillsRadarChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 text-center">Based on roles and responsibilities analysis.</p>
+                </div>
+
+                <!-- Bar Chart: Tech Stack Frequency -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Most Utilized Technologies</h3>
+                    <div class="chart-container">
+                        <canvas id="techStackChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 text-center">Frequency of technology citation in professional experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-10">
+                <h2 class="text-3xl font-extrabold text-blue-900">Professional Experience</h2>
+                <p class="mt-2 text-slate-600">
+                    A history of delivering secure, scalable systems for enterprise clients. 
+                    <span class="text-cyan-600 font-semibold cursor-pointer hover:underline" onclick="resetFilters()">Reset Filters</span>
+                </p>
+            </div>
+
+            <!-- Tech Filter Buttons -->
+            <div class="flex flex-wrap gap-2 mb-8" id="techFilters">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative timeline-line space-y-8" id="timelineContainer">
+                <!-- Timeline items populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Education & Languages -->
+    <section id="education" class="py-12 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <!-- Education -->
+                <div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                        <span class="text-amber-500 mr-2">🎓</span> Education
+                    </h3>
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                        <h4 class="text-lg font-bold text-slate-800">Vienna University of Technology</h4>
+                        <p class="text-sm text-cyan-600 font-semibold">10/2004 - 06/2010</p>
+                        <p class="mt-2 text-slate-600 text-sm">
+                            Certificates in Information Security, Advanced InfoSec, Software & Systems Engineering, Business Engineering.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h4 class="text-lg font-bold text-slate-800">Mfantsipim School, Ghana</h4>
+                        <p class="text-sm text-cyan-600 font-semibold">1993 - 1995</p>
+                        <p class="mt-2 text-slate-600 text-sm">
+                            Advanced Level GCE: Mathematics, Geography, Economics.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Languages -->
+                <div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                        <span class="text-amber-500 mr-2">🌍</span> Languages
+                    </h3>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- English -->
+                            <div class="text-center">
+                                <div class="relative w-24 h-24 mx-auto mb-2 flex items-center justify-center rounded-full border-4 border-cyan-500 bg-slate-50">
+                                    <span class="font-bold text-slate-800">Native</span>
+                                </div>
+                                <p class="font-semibold text-slate-700">English</p>
+                            </div>
+                            <!-- German -->
+                            <div class="text-center">
+                                <div class="relative w-24 h-24 mx-auto mb-2 flex items-center justify-center rounded-full border-4 border-blue-900 bg-slate-50">
+                                    <span class="font-bold text-slate-800">Business</span>
+                                </div>
+                                <p class="font-semibold text-slate-700">German</p>
+                            </div>
+                            <!-- Spanish -->
+                            <div class="text-center mt-4">
+                                <div class="relative w-24 h-24 mx-auto mb-2 flex items-center justify-center rounded-full border-4 border-slate-300 bg-slate-50">
+                                    <span class="font-bold text-slate-500">Basic</span>
+                                </div>
+                                <p class="font-semibold text-slate-700">Spanish</p>
+                            </div>
+                            <!-- French -->
+                            <div class="text-center mt-4">
+                                <div class="relative w-24 h-24 mx-auto mb-2 flex items-center justify-center rounded-full border-4 border-slate-300 bg-slate-50">
+                                    <span class="font-bold text-slate-500">Basic</span>
+                                </div>
+                                <p class="font-semibold text-slate-700">French</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <p class="font-bold text-lg">John Kojo Ampia-Addison</p>
+                <p class="text-blue-300 text-sm">Senior Software Architect</p>
+            </div>
+            <div class="text-sm text-blue-200">
+                <p>Vienna, Austria • +43 676 922 1796</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        // --- DATA SOURCE ---
+        const careerData = [
+            {
+                role: "Software Developer & DevOps Engineer",
+                company: "Bundesrechenzentrum (BRZ)",
+                period: "10/2025 - Present",
+                desc: "Deploying Spring Boot apps to Openshift PaaS. 2nd Level Access Management Support. Designing GitOps & IaC.",
+                stack: ["Java", "Spring Boot", "Openshift", "Helm", "Grafana", "ArgoCD", "Kubernetes", "Git"]
+            },
+            {
+                role: "Software Developer & DevOps Engineer",
+                company: "Bundesrechenzentrum (BRZ)",
+                period: "07/2024 - 09/2025",
+                desc: "Refactoring core APIs, setting up metrics/traces/logs monitoring infrastructure, documenting designs in Confluence.",
+                stack: ["Java", "Spring", "SQL", "Grafana", "Opentelemetry", "Docker", "DB2", "Kubernetes"]
+            },
+            {
+                role: "Senior Software Architect (Pro-bono)",
+                company: "Abofonsa Mobile Health Service",
+                period: "03/2022 - 12/2025",
+                desc: "Led development of Web Application Platform and NRT communication brokerage. Microservices architecture.",
+                stack: ["Java 17", "Spring Boot", "Kafka", "Camel", "ELK", "MongoDB", "Angular", "Docker"]
+            },
+            {
+                role: "Senior Software Architect",
+                company: "Bedrock Insurance Ghana",
+                period: "08/2020 - 12/2022",
+                desc: "Developed comprehensive insurance web apps (Operations, Customer). Ensured OWASP T10 compliance.",
+                stack: ["Java 11", "Spring Boot", "Microservices", "Security", "MongoDB", "Kafka", "Angular", "Elasticsearch"]
+            },
+            {
+                role: "Senior DevOps Engineer / Consultant",
+                company: "Accenture",
+                period: "06/2022 - 08/2023",
+                desc: "Application migration to Openshift. Designed Custom Metrics (SLI/SLO). CI/CD with Jenkins.",
+                stack: ["Kubernetes", "Openshift", "Jenkins", "Prometheus", "Grafana", "ELK", "Groovy"]
+            },
+            {
+                role: "Senior Software Engineer / Consultant",
+                company: "Swiss Railways (SBB)",
+                period: "11/2021 - 02/2022",
+                desc: "Stabilization and Tooling. Analyzed and improved existing tools for software stability.",
+                stack: ["Python", "Jupyter", "Java", "Eclipse RCP"]
+            },
+            {
+                role: "Monitoring & DevOps Engineer / Consultant",
+                company: "Austrian Railways (ÖBB)",
+                period: "02/2019 - 10/2021",
+                desc: "Ticketshop Operations Monitoring. Built dashboards using open source tools.",
+                stack: ["Elasticsearch", "Grafana", "Prometheus", "Kubernetes", "Jenkins", "Spring Boot", "Angular", "OracleDB"]
+            },
+            {
+                role: "Systems and Software Engineer",
+                company: "Thales Austria GmbH",
+                period: "01/2013 - 02/2018",
+                desc: "R&D, Project Management, implementation of state-of-the-art tech use cases.",
+                stack: ["ELK", "MongoDB", "Hibernate", "Camel", "Java 8", "AngularJS", "Maven", "JHipster"]
+            },
+            {
+                role: "Software Developer",
+                company: "Secured Business Austria (SBA)",
+                period: "11/2011 - 12/2012",
+                desc: "Converted research work into secure software applications.",
+                stack: ["C#", "ASP.NET", "SQL Server", "XML", "Bootstrap"]
+            },
+            {
+                role: "Software Developer & Ops Support",
+                company: "Newcon / T-Mobile Austria",
+                period: "12/2009 - 11/2011",
+                desc: "Monitored Interconnection Billing Process. Optimized processes.",
+                stack: ["Java", "SQL", "OracleDB", "PL/SQL"]
+            }
+        ];
+
+        // --- HELPER FUNCTIONS ---
+
+        // 1. Label Wrapping Logic (Mandatory for Charts)
+        function wrapLabels(labels) {
+            return labels.map(label => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if ((currentLine + " " + words[i]).length <= 16) {
+                        currentLine += " " + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            });
+        }
+
+        // 2. Tooltip Configuration (Mandatory)
+        const commonTooltipOptions = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- CHART INITIALIZATION ---
+
+        function initCharts() {
+            // Data Processing for Charts
+            // 1. Frequency Count for Bar Chart
+            const techCounts = {};
+            careerData.forEach(job => {
+                job.stack.forEach(tech => {
+                    // Normalizing tech names roughly
+                    let t = tech.split(' ')[0]; // Take first word e.g. "Java 8" -> "Java"
+                    if(t === "Spring") t = "Spring Boot";
+                    if(t === "Elasticsearch") t = "ELK/Elastic";
+                    if(t === "ELK") t = "ELK/Elastic";
+                    if(t === "Openshift") t = "OpenShift";
+                    techCounts[t] = (techCounts[t] || 0) + 1;
+                });
+            });
+
+            const sortedTech = Object.entries(techCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8); // Top 8 technologies
+
+            // Chart 1: Tech Stack Bar Chart
+            const ctxTech = document.getElementById('techStackChart').getContext('2d');
+            new Chart(ctxTech, {
+                type: 'bar',
+                data: {
+                    labels: wrapLabels(sortedTech.map(t => t[0])),
+                    datasets: [{
+                        label: 'Projects/Roles Utilized',
+                        data: sortedTech.map(t => t[1]),
+                        backgroundColor: '#06b6d4', // Cyan
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: commonTooltipOptions,
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Domain Expertise Radar Chart
+            // Estimated based on CV keywords frequency and depth
+            const ctxRadar = document.getElementById('skillsRadarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: wrapLabels(['Backend Dev (Java)', 'DevOps/CI-CD', 'Cloud (K8s/OpenShift)', 'Observability', 'Security', 'Database']),
+                    datasets: [{
+                        label: 'Proficiency Level (0-10)',
+                        data: [9.5, 9, 8.5, 9, 8, 8.5], // Expert = 9-10, Competent = 7-8
+                        backgroundColor: 'rgba(30, 58, 138, 0.2)', // Navy transparent
+                        borderColor: '#1e3a8a',
+                        pointBackgroundColor: '#d97706',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#d97706'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: commonTooltipOptions,
+                        legend: { display: false }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: {
+                                font: { size: 11, weight: 'bold' },
+                                color: '#475569'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- DOM MANIPULATION & LOGIC ---
+
+        function renderFilters() {
+            // Collect all unique tech
+            const allTech = new Set();
+            careerData.forEach(job => job.stack.forEach(t => allTech.add(t.split(' ')[0])));
+            const techArray = Array.from(allTech).sort();
+
+            const container = document.getElementById('techFilters');
+            // Add key filters manually for better UX (top 6)
+            const topFilters = ["Java", "Spring", "Kubernetes", "Openshift", "Grafana", "Angular"];
+            
+            topFilters.forEach(tech => {
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-blue-100 hover:text-blue-700 transition-colors border border-slate-200";
+                btn.innerText = tech;
+                btn.onclick = () => filterTimeline(tech);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderTimeline(filter = null) {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+
+            careerData.forEach((job, index) => {
+                // Filter logic
+                if (filter) {
+                    const hasTech = job.stack.some(t => t.includes(filter));
+                    if (!hasTech) return;
+                }
+
+                // Create Timeline Item
+                const item = document.createElement('div');
+                item.className = "relative pl-12 transition-all duration-300 ease-in-out hover:pl-14";
+                
+                // Icon styling based on role type
+                let iconColor = "bg-blue-900";
+                let iconChar = "💼";
+                if (job.role.includes("Architect")) { iconColor = "bg-amber-500"; iconChar = "🏗️"; }
+                if (job.role.includes("DevOps") || job.role.includes("Monitoring")) { iconColor = "bg-cyan-500"; iconChar = "⚙️"; }
+
+                item.innerHTML = `
+                    <div class="absolute left-0 top-0 w-10 h-10 ${iconColor} rounded-full flex items-center justify-center border-4 border-white shadow z-10 text-white">
+                        ${iconChar}
+                    </div>
+                    <div class="bg-slate-50 rounded-lg shadow-sm p-6 border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center mb-2">
+                            <h3 class="text-xl font-bold text-slate-800">${job.role}</h3>
+                            <span class="text-sm font-semibold text-cyan-600 bg-cyan-50 px-2 py-1 rounded">${job.period}</span>
+                        </div>
+                        <h4 class="text-md text-blue-900 font-medium mb-3">${job.company}</h4>
+                        <p class="text-slate-600 mb-4 leading-relaxed">${job.desc}</p>
+                        
+                        <div class="flex flex-wrap gap-2">
+                            ${job.stack.map(tech => `
+                                <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500 font-mono cursor-pointer hover:border-blue-300 hover:text-blue-600" onclick="filterTimeline('${tech.split(' ')[0]}')">
+                                    ${tech}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function filterTimeline(tech) {
+            // Update UI to show active filter
+            const btns = document.getElementById('techFilters').children;
+            for(let btn of btns) {
+                if(btn.innerText.includes(tech)) {
+                    btn.classList.add('bg-blue-900', 'text-white');
+                    btn.classList.remove('bg-slate-100', 'text-slate-600');
+                } else {
+                    btn.classList.remove('bg-blue-900', 'text-white');
+                    btn.classList.add('bg-slate-100', 'text-slate-600');
+                }
+            }
+            renderTimeline(tech);
+        }
+
+        function resetFilters() {
+            const btns = document.getElementById('techFilters').children;
+             for(let btn of btns) {
+                btn.classList.remove('bg-blue-900', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            }
+            renderTimeline();
+        }
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            renderFilters();
+            renderTimeline();
+        });
+
+    </script>
+</body>
+</html>

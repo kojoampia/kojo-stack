@@ -73,7 +73,7 @@ export class AccountService {
   }
 
   private fetch(): Observable<Account> {
-    return this.http.get<Account>(SERVER_API_URL + '/api/v1/account');
+    return this.http.get<Account>(SERVER_API_URL + '/api/v1/account/me');
   }
 
   private navigateToStoredUrl(): void {

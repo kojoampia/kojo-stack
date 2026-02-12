@@ -6,7 +6,7 @@ import { SERVER_API_URL, KS_DASHBOARD_URL } from '@app/app.constants';
 import { Login } from '../login/login.model';
 
 type JwtToken = {
-  id_token: string;
+  token: string;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +19,7 @@ export class AuthServerProvider {
 
   login(credentials: Login): Observable<void> {
     return this.http
-      .post<JwtToken>(SERVER_API_URL + '/api/v1/auth', credentials)
+      .post<JwtToken>(SERVER_API_URL + '/api/v1/auth/login', credentials)
       .pipe(map(response => this.authenticateSuccess(response, credentials.rememberMe)));
   }
 
@@ -36,7 +36,7 @@ export class AuthServerProvider {
   }
 
   private authenticateSuccess(response: JwtToken, rememberMe: boolean): void {
-    const jwt = response.id_token;
+    const jwt = response.token;
     if (rememberMe) {
       localStorage.setItem('authenticationToken', jwt);
     } else {
