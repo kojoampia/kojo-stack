@@ -27,8 +27,6 @@ export class AuthServerProvider {
     return new Observable(observer => {
       localStorage.removeItem('authenticationToken');
       sessionStorage.removeItem('authenticationToken');
-      localStorage.removeItem('generalWebAuthenticationToken');
-      sessionStorage.removeItem('generalWebAuthenticationToken');
       localStorage.removeItem('credentials');
       sessionStorage.removeItem('credentials');
       observer.complete();
@@ -54,16 +52,16 @@ export class AuthServerProvider {
 
   getGeneralWebToken(): string {
     return (
-      localStorage.getItem('generalWebAuthenticationToken') || sessionStorage.getItem('generalWebAuthenticationToken') || ''
+      localStorage.getItem('authenticationToken') || sessionStorage.getItem('authenticationToken') || ''
     );
   }
 
   private generalWebAuthenticateSuccess(response: JwtToken, rememberMe: boolean): void {
-    const jwt = response.id_token;
+    const jwt = response.token ?? response.token;
     if (rememberMe) {
-      localStorage.setItem('generalWebAuthenticationToken', jwt);
+      localStorage.setItem('authenticationToken', jwt);
     } else {
-      sessionStorage.setItem('generalWebAuthenticationToken', jwt);
+      sessionStorage.setItem('authenticationToken', jwt);
     }
   }
 }
