@@ -61,7 +61,7 @@ export class LoginComponent implements OnDestroy {
           this.isLoginError = true;
           this.password = '';
           this.error = '';
-          if (err.status === 401) {
+          if (err.status === 401 || err.status === 403) {
             this.error = 'Invalid username or password';
           } else {
             this.error = 'An error occurred while logging in';
