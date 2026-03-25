@@ -44,6 +44,7 @@ export class ProfileDashboardComponent implements OnInit {
       next: (items: UserProfile[]) => {
         this.items = items;
         this.loading = false;
+        this.error = null;
       },
       error: (err: any) => {
         this.error = 'Failed to load profiles: ' + err.message;

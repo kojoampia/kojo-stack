@@ -38,6 +38,54 @@ export class AdminDashboardComponent implements OnInit {
   private initializeMenuItems(): void {
     this.menuItems = [
       {
+        title: 'Projects',
+        description: 'Manage projects',
+        icon: 'folder',
+        emoji: '📁',
+        route: '/management/projects',
+        color: 'warn'
+      },
+      {
+        title: 'Documentation',
+        description: 'Manage documentation',
+        icon: 'description',
+        emoji: '📄',
+        route: '/management/documentation',
+        color: 'warn'
+      },
+      {
+        title: 'Experience',
+        description: 'Manage work experience',
+        icon: 'work',
+        emoji: '💼',
+        route: '/management/experience',
+        color: 'accent'
+      },
+      {
+        title: 'Skills',
+        description: 'Manage technical skills',
+        icon: 'school',
+        emoji: '🎓',
+        route: '/management/skills',
+        color: 'primary'
+      },
+      {
+        title: 'Inquiries',
+        description: 'Manage inquiries',
+        icon: 'mail',
+        emoji: '📧',
+        route: '/management/inquiries',
+        color: 'primary'
+      },
+      {
+        title: 'Education',
+        description: 'Manage education records',
+        icon: 'school',
+        emoji: '🎓',
+        route: '/management/education',
+        color: 'warn'
+      },
+      {
         title: 'Profiles',
         description: 'Manage user profiles',
         icon: 'person',
@@ -54,60 +102,12 @@ export class AdminDashboardComponent implements OnInit {
         color: 'accent'
       },
       {
-        title: 'Documentation',
-        description: 'Manage documentation',
-        icon: 'description',
-        emoji: '📄',
-        route: '/management/documentation',
-        color: 'warn'
-      },
-      {
-        title: 'Skills',
-        description: 'Manage technical skills',
-        icon: 'school',
-        emoji: '🎓',
-        route: '/management/skills',
-        color: 'primary'
-      },
-      {
-        title: 'Experience',
-        description: 'Manage work experience',
-        icon: 'work',
-        emoji: '💼',
-        route: '/management/experience',
-        color: 'accent'
-      },
-      {
-        title: 'Projects',
-        description: 'Manage projects',
-        icon: 'folder',
-        emoji: '📁',
-        route: '/management/projects',
-        color: 'warn'
-      },
-      {
-        title: 'Inquiries',
-        description: 'Manage inquiries',
-        icon: 'mail',
-        emoji: '📧',
-        route: '/management/inquiries',
-        color: 'primary'
-      },
-      {
         title: 'Metrics',
         description: 'View system metrics',
         icon: 'show_chart',
         emoji: '📊',
         route: '/management/metrics',
         color: 'accent'
-      },
-      {
-        title: 'Education',
-        description: 'Manage education records',
-        icon: 'school',
-        emoji: '🎓',
-        route: '/management/education',
-        color: 'warn'
       }
     ];
   }
