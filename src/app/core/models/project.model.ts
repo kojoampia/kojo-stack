@@ -1,5 +1,5 @@
-export type ProjectType = 'Microservices' | 'Monolith' | 'Migration' | 'DevOps' | 'Architecture' | 'ETL' | 'Monitoring' | 'Mentoring' | 'Code Review';
-export type ProjectStatus = 'Live' | 'Completed' | 'Maintenance' | 'Pending';
+export type ProjectType = 'ARCHITECTURE' | 'MICROSERVICES'| 'DEVOPS' | 'BACKEND_SERVICE' | 'FRONTEND' | 'FULL_STACK' | 'DATA_ENGINEERING' | 'CONSULTING' | 'MIGRATION' | 'ETL' | 'MONITORING' | 'CODE_REVIEW' | 'MENTORING' | 'TRANSFORMATION';
+export type ProjectStatus = 'LIVE' | 'PENDING' | 'MAINTENANCE' | 'CONSULTING' | 'PLANNING' | 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'ARCHIVED'
 
 export interface Project {
   id?: string;

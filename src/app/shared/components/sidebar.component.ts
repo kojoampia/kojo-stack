@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
@@ -15,18 +16,17 @@ import { ProfileService } from '@app/core/services';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly accountService = inject(AccountService);
+  private readonly authenticationService = inject(AuthServerProvider);
+  private readonly profileService = inject(ProfileService);
+  private readonly destroyRef = inject(DestroyRef);
+
   currentView = signal<string>('Dashboard');
   avatarError = signal(false);
   navItems = ['Dashboard', 'Projects', 'Docs', 'Education', 'Settings', 'Hire'];
   isLoggedIn = signal<boolean>(false);
   profile = signal<UserProfile | null>(null);
-
-  constructor(
-    private readonly router: Router,
-    private readonly accountService: AccountService,
-    private readonly authenticationService: AuthServerProvider,
-    private readonly profileService: ProfileService,
-  ) {}
 
   ngOnInit(): void {
     // Check authentication status
@@ -34,7 +34,10 @@ export class SidebarComponent implements OnInit {
 
     // Update currentView when route changes
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe((event: any) => {
         const url = event.urlAfterRedirects as string;
         const route = url.split('/').pop() || 'Dashboard';
@@ -42,7 +45,7 @@ export class SidebarComponent implements OnInit {
         this.currentView.set(viewName);
       });
 
-    this.profileService.getProfile().subscribe(profile => {
+    this.profileService.getDefault().subscribe(profile => {
       this.profile.set(profile);
     });
   }

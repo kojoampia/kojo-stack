@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject, of } from 'rxjs';
@@ -9,15 +9,13 @@ import { StateStorageService } from './state-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
+  private readonly http = inject(HttpClient);
+  private readonly stateStorageService = inject(StateStorageService);
+  private readonly router = inject(Router);
+
   private userIdentity: Account | null = null;
   private readonly authenticationState = new ReplaySubject<Account | null>(1);
   private accountCache$?: Observable<Account | null>;
-
-  constructor(
-    private readonly http: HttpClient,
-    private readonly stateStorageService: StateStorageService,
-    private readonly router: Router,
-  ) {}
 
   save(account: Account): Observable<{}> {
     return this.http.post(SERVER_API_URL + '/api/v1/account', account);

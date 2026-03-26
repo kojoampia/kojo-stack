@@ -21,10 +21,10 @@
             <div class="flex items-center gap-1.5">
               <span class="h-2 w-2 rounded-full" 
                 [ngClass]="{
-                  'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]': project.status === 'Live',
-                  'bg-blue-500': project.status === 'Completed',
-                  'bg-amber-500': project.status === 'Maintenance',
-                  'bg-slate-500 animate-pulse': project.status === 'Pending'
+                  'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]': project.status === 'LIVE',
+                  'bg-blue-500': project.status === 'COMPLETED',
+                  'bg-amber-500': project.status === 'MAINTENANCE',
+                  'bg-slate-500 animate-pulse': project.status === 'PENDING'
                 }"></span>
               <span class="text-xs font-mono text-slate-400">{{ project.status }}</span>
             </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectService } from '@app/core/services';
 import { Project } from '@app/core/models';
@@ -11,9 +11,9 @@ import { Project } from '@app/core/models';
   styleUrls: ['./projects.component.scss']
 })
 export class ProjectsComponent implements OnInit {
-  projects = signal<Project[]>([]);
+  private readonly projectService = inject(ProjectService);
 
-  constructor(private projectService: ProjectService) {}
+  projects = signal<Project[]>([]);
 
   ngOnInit(): void {
     this.projectService.getProjects().subscribe(projects => {

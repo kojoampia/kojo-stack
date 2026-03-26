@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UserProfile } from '@app/core/models/profile.model';
 import { SERVER_API_URL } from '@app/app.constants';
@@ -9,18 +9,8 @@ import { SERVER_API_URL } from '@app/app.constants';
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = `${SERVER_API_URL}/api/v1/profiles`;
-  private profiles$ = new BehaviorSubject<UserProfile[]>([{
-    id: 'jkaa-001',
-    name: 'John Kojo Ampia-Addison',
-    title: 'Senior Software Architect & DevOps Engineer',
-    email: 'kojo.ampia@jojoaddison.net',
-    phone: '+43 676 922 1796',
-    location: 'Vienna, Austria',
-    avatar: 'assets/kojo-ampia-addison.jpeg'
-  }]);
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${SERVER_API_URL}/api/v1/profiles`;
 
   getAll(): Observable<UserProfile[]> {
     return this.http.get<UserProfile[]>(this.apiUrl);
@@ -42,23 +32,9 @@ export class ProfileService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getProfile(): Observable<UserProfile> {
-    return this.profiles$.asObservable().pipe(
-      map(profiles => profiles[0] || {
-        id: 'jkaa-001',
-        name: 'John Kojo Ampia-Addison',
-        title: 'Senior Software Architect & DevOps Engineer',
-        email: 'kojo.ampia@jojoaddison.net',
-        phone: '+43 676 922 1796',
-        location: 'Vienna, Austria',
-        avatar: 'assets/kojo-ampia-addison.jpeg'
-      })
+  getDefault(): Observable<UserProfile> {
+    return this.getAll().pipe(
+      map(profiles => profiles[0])
     );
-  }
-
-  updateProfile(profile: Partial<UserProfile>): void {
-    const current = this.profiles$.value;
-    const updated = current.map(p => (p.id === profile.id ? { ...p, ...profile } : p));
-    this.profiles$.next(updated);
   }
 }

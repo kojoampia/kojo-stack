@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,8 +13,10 @@ import { ProjectService } from '@app/core/services/project.service';
   styleUrls: ['./project-dashboard.component.scss']
 })
 export class ProjectDashboardComponent implements OnInit {
+  private readonly projectService = inject(ProjectService);
+
   modelName = 'Project';
-  items: Project[] = [];
+  items = signal<Project[]>([]);
   selectedItem: Project | null = null;
   detailItem: Project | null = null;
   isCreating = false;
@@ -22,40 +24,34 @@ export class ProjectDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
 
-  typeOptions: ProjectType[] = ['Microservices', 'Monolith', 'Migration', 'DevOps', 'Architecture', 'ETL', 'Monitoring'];
-  statusOptions: ProjectStatus[] = ['Live', 'Completed', 'Maintenance', 'Pending'];
+  typeOptions: ProjectType[] = ['ARCHITECTURE', 'MICROSERVICES', 'DEVOPS', 'BACKEND_SERVICE', 'FRONTEND', 'FULL_STACK', 'DATA_ENGINEERING', 'CONSULTING', 'MIGRATION', 'ETL', 'MONITORING', 'TRANSFORMATION'];
+  statusOptions: ProjectStatus[] = ['LIVE', 'COMPLETED', 'MAINTENANCE', 'PENDING'];
 
   formData: Partial<Project> = {
     name: '',
     client: '',
-    type: 'Microservices',
+    type: 'MICROSERVICES',
     description: '',
     stack: [],
-    status: 'Pending',
+    status: 'PENDING',
     architecture: ''
   };
 
   stackInput = '';
-
-  constructor(private projectService: ProjectService) {}
 
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.projectService.getProjects().subscribe({
       next: (items: Project[]) => {
-        this.items = items;
-        this.loading = false;
+        this.items.set(items);
       },
       error: (err: any) => {
         this.error = 'Failed to load projects: ' + err.message;
-        this.loading = false;
       }
     });
   }
@@ -79,10 +75,10 @@ export class ProjectDashboardComponent implements OnInit {
     this.formData = {
       name: '',
       client: '',
-      type: 'Microservices',
+      type: 'MICROSERVICES',
       description: '',
       stack: [],
-      status: 'Pending',
+      status: 'PENDING',
       architecture: ''
     };
     this.error = null;
@@ -91,9 +87,11 @@ export class ProjectDashboardComponent implements OnInit {
   editItem(item: Project): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
-    this.formData = { ...item, stack: [...item.stack] };
-    this.stackInput = item.stack.join(', ');
+    this.formData = { ...item, stack: [...(item.stack || [])] };
+    this.stackInput = (item.stack || []).join(', ');
     this.error = null;
   }
 
@@ -105,28 +103,48 @@ export class ProjectDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     // Parse stack from comma-separated input
     this.formData.stack = this.stackInput.split(',').map(s => s.trim()).filter(s => s);
     
     const project = { ...this.selectedItem, ...this.formData } as Project;
 
     if (this.isCreating) {
-      this.projectService.addProject(project);
-      this.loadItems();
-      this.cancelAction();
+      this.projectService.addProject(project).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to create project';
+        }
+      });
     } else if (this.isUpdating && project.id) {
-      this.projectService.updateProject(project.id, project);
-      this.loadItems();
-      this.cancelAction();
+      this.projectService.updateProject(project.id, project).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to update project';
+        }
+      });
     }
-    this.loading = false;
   }
 
   confirmDelete(): void {
-    this.cancelAction();
-    this.loadItems();
+    if (this.selectedItem?.id) {
+      this.projectService.deleteProject(this.selectedItem.id).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to delete project';
+        }
+      });
+    } else {
+      this.cancelAction();
+    }
   }
 
   cancelAction(): void {
@@ -158,13 +176,13 @@ export class ProjectDashboardComponent implements OnInit {
 
   getTypeClass(type: string): string {
     const typeClasses: { [key: string]: string } = {
-      'Microservices': 'type-microservices',
-      'Monolith': 'type-monolith',
-      'Migration': 'type-migration',
-      'DevOps': 'type-devops',
-      'Architecture': 'type-architecture',
+      'MICROSERVICES': 'type-microservices',
+      'MONOLITH': 'type-monolith',
+      'MIGRATION': 'type-migration',
+      'DEVOPS': 'type-devops',
+      'ARCHITECTURE': 'type-architecture',
       'ETL': 'type-etl',
-      'Monitoring': 'type-monitoring'
+      'MONITORING': 'type-monitoring'
     };
     return typeClasses[type] || '';
   }

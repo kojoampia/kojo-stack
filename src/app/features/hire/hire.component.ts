@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '@app/core/services';
@@ -15,16 +15,18 @@ declare var paypal: any;
   styleUrls: ['./hire.component.scss']
 })
 export class HireComponent implements OnInit, AfterViewChecked {
+  private readonly projectService = inject(ProjectService);
+
   @ViewChild('paypalButtonContainer') paypalButtonContainer!: ElementRef;
 
   inquiry: ConsultingInquiry = {
     name: '',
     email: '',
-    type: 'Architecture',
+    type: 'ARCHITECTURE',
     message: ''
   };
 
-  engagementTypes: ProjectType[] = ['Architecture', 'DevOps', 'Migration'];
+  engagementTypes: ProjectType[] = ['ARCHITECTURE', 'MICROSERVICES', 'DEVOPS', 'BACKEND_SERVICE', 'FRONTEND', 'FULL_STACK', 'DATA_ENGINEERING', 'CONSULTING', 'MIGRATION', 'ETL', 'MONITORING'];
   highLoad = signal(true);
 
   // Payment flow state
@@ -40,8 +42,6 @@ export class HireComponent implements OnInit, AfterViewChecked {
   readonly INQUIRY_FEE = 1.99;
   readonly CURRENCY = 'EUR';
   readonly PAYPAL_CLIENT_ID ='BAAr8DEr2oEc4llQN9V0Hx9Tar2Ky-ApFeCm8k7vH1Risbw83C3k2VAuaopVxi1Pjdun_0jzFOHVxN1ttk';
-
-  constructor(private projectService: ProjectService) {}
 
   ngOnInit(): void {
     this.loadPayPalScript();
@@ -163,12 +163,12 @@ export class HireComponent implements OnInit, AfterViewChecked {
       type: this.inquiry.type,
       description: this.inquiry.message,
       stack: ['Planning', 'TBD'],
-      status: 'Pending' as const,
+      status: 'PENDING' as const,
       architecture: 'Under Review',
       paymentTransactionId: this.transactionId()
     };
 
-    this.projectService.addProject(newProject);
+    this.projectService.addProject(newProject).subscribe();
     
     alert(`Contract Initialized for ${this.inquiry.name}. Deployment pipeline started. Transaction ID: ${this.transactionId()}`);
 
@@ -176,7 +176,7 @@ export class HireComponent implements OnInit, AfterViewChecked {
     this.inquiry = {
       name: '',
       email: '',
-      type: 'Architecture',
+      type: 'ARCHITECTURE',
       message: ''
     };
     this.paymentCompleted.set(false);

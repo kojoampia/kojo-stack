@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,8 +13,10 @@ import { SkillsService } from '@app/core/services/skills.service';
   styleUrls: ['./skill-dashboard.component.scss']
 })
 export class SkillDashboardComponent implements OnInit {
+  private readonly skillsService = inject(SkillsService);
+
   modelName = 'Skill';
-  filteredItems: TechSkill[] = [];
+  filteredItems = signal<TechSkill[]>([]);
   selectedItem: TechSkill | null = null;
   detailItem: TechSkill | null = null;
   isCreating = false;
@@ -22,7 +24,6 @@ export class SkillDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
   selectedCategory: SkillCategory | 'All' = 'All';
 
@@ -34,9 +35,7 @@ export class SkillDashboardComponent implements OnInit {
     level: 50,
     icon: ''
   };
-  skills = signal<TechSkill[] | []> ([]);
-
-  constructor(private skillsService: SkillsService) {}
+  skills = signal<TechSkill[]>([]);
 
 
 
@@ -45,30 +44,22 @@ export class SkillDashboardComponent implements OnInit {
   }
 
   loadSkills(): void {
-    this.loading = true;
-    this.skillsService.getAll().subscribe(skills => {
-      if (skills && skills.length > 0) {
+    this.skillsService.getAll().subscribe({
+      next: (skills) => {
         this.skills.set(skills);
         this.filterByCategory();
-        this.loading = false;
-      } else {
-        this.loadMockSkills();
+      },
+      error: () => {
+        this.error = 'Failed to load skills';
       }
-    });
-  }
-
-  loadMockSkills(): void {
-    this.skillsService.getSkills().subscribe(skills => {
-      this.skills.set(skills);
-      this.filterByCategory();
     });
   }
 
   filterByCategory(): void {
     if (this.selectedCategory === 'All') {
-      this.filteredItems = [...this.skills()];
+      this.filteredItems.set([...this.skills()]);
     } else {
-      this.filteredItems = this.skills().filter(s => s.category === this.selectedCategory);
+      this.filteredItems.set(this.skills().filter(s => s.category === this.selectedCategory));
     }
   }
 
@@ -103,6 +94,8 @@ export class SkillDashboardComponent implements OnInit {
   editItem(item: TechSkill): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
     this.formData = { ...item };
     this.error = null;
@@ -116,25 +109,45 @@ export class SkillDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     const skill = { ...this.formData } as TechSkill;
 
     if (this.isCreating) {
-      this.skillsService.createSkill(skill);
-      this.loadSkills();
-      this.cancelAction();
-    } else if (this.isUpdating && this.selectedItem) {
-      this.skillsService.updateSkill(this.selectedItem.name, skill);
-      this.loadSkills();
-      this.cancelAction();
+      this.skillsService.createSkill(skill).subscribe({
+        next: () => {
+          this.loadSkills();
+          this.cancelAction();
+        },
+        error: () => {
+          this.error = 'Failed to create skill';
+        }
+      });
+    } else if (this.isUpdating && this.selectedItem?.id) {
+      this.skillsService.updateSkill(this.selectedItem.id, skill).subscribe({
+        next: () => {
+          this.loadSkills();
+          this.cancelAction();
+        },
+        error: () => {
+          this.error = 'Failed to update skill';
+        }
+      });
     }
-    this.loading = false;
   }
 
   confirmDelete(): void {
-    this.cancelAction();
-    this.loadSkills();
+    if (this.selectedItem?.id) {
+      this.skillsService.deleteSkill(this.selectedItem.id).subscribe({
+        next: () => {
+          this.loadSkills();
+          this.cancelAction();
+        },
+        error: () => {
+          this.error = 'Failed to delete skill';
+        }
+      });
+    } else {
+      this.cancelAction();
+    }
   }
 
   cancelAction(): void {

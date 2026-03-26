@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { Login } from './login.model';
@@ -8,7 +8,8 @@ import { Account } from './account.model';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  constructor(private readonly accountService: AccountService, private readonly authServerProvider: AuthServerProvider) {}
+  private readonly accountService = inject(AccountService);
+  private readonly authServerProvider = inject(AuthServerProvider);
 
   login(credentials: Login): Observable<Account | null> {
     return this.authServerProvider.login(credentials)

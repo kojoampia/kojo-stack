@@ -5,3 +5,5 @@ export * from './skills.service';
 export * from './profile.service';
 export * from './settings.service';
 export * from './education.service';
+export * from './metric.service';
+export * from './inquiry.service';

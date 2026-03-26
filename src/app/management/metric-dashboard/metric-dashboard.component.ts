@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,9 +15,11 @@ type TrendType = 'up' | 'down' | 'stable';
   styleUrls: ['./metric-dashboard.component.scss']
 })
 export class MetricDashboardComponent implements OnInit {
+  private readonly metricService = inject(MetricService);
+
   modelName = 'Metric';
-  items: MetricEntry[] = [];
-  filteredItems: MetricEntry[] = [];
+  items = signal<MetricEntry[]>([]);
+  filteredItems = signal<MetricEntry[]>([]);
   selectedItem: MetricEntry | null = null;
   detailItem: MetricEntry | null = null;
   isCreating = false;
@@ -25,7 +27,6 @@ export class MetricDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
   selectedCategory: MetricCategory | 'All' = 'All';
 
@@ -40,32 +41,27 @@ export class MetricDashboardComponent implements OnInit {
     description: ''
   };
 
-  constructor(private metricService: MetricService) {}
-
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.metricService.getMetrics().subscribe({
       next: (items: MetricEntry[]) => {
-        this.items = items;
+        this.items.set(items);
         this.filterByCategory();
-        this.loading = false;
       },
       error: (err: any) => {
         this.error = 'Failed to load metrics: ' + err.message;
-        this.loading = false;
       }
     });
   }
 
   filterByCategory(): void {
     if (this.selectedCategory === 'All') {
-      this.filteredItems = [...this.items];
+      this.filteredItems.set([...this.items()]);
     } else {
-      this.filteredItems = this.items.filter(m => m.category === this.selectedCategory);
+      this.filteredItems.set(this.items().filter(m => m.category === this.selectedCategory));
     }
   }
 
@@ -101,6 +97,8 @@ export class MetricDashboardComponent implements OnInit {
   editItem(item: MetricEntry): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
     this.formData = { ...item };
     this.error = null;
@@ -114,28 +112,45 @@ export class MetricDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     const metric = { ...this.selectedItem, ...this.formData } as MetricEntry;
 
     if (this.isCreating) {
-      this.metricService.addMetric(metric);
-      this.loadItems();
-      this.cancelAction();
+      this.metricService.addMetric(metric).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to create metric';
+        }
+      });
     } else if (this.isUpdating && metric.id) {
-      this.metricService.updateMetric(metric.id, metric);
-      this.loadItems();
-      this.cancelAction();
+      this.metricService.updateMetric(metric.id, metric).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to update metric';
+        }
+      });
     }
-    this.loading = false;
   }
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.metricService.deleteMetric(this.selectedItem.id);
-      this.loadItems();
+      this.metricService.deleteMetric(this.selectedItem.id).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: () => {
+          this.error = 'Failed to delete metric';
+        }
+      });
+    } else {
+      this.cancelAction();
     }
-    this.cancelAction();
   }
 
   cancelAction(): void {

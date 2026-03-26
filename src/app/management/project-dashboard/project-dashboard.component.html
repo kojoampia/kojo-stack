@@ -11,33 +11,31 @@
     <h1>📁 {{ modelName }} Management</h1>
     <button 
       class="btn btn-primary" 
-      (click)="createItem()"
-      [disabled]="loading">
+      (click)="createItem()">
       + Add New {{ modelName }}
     </button>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="error" class="alert alert-error">
-    {{ error }}
-    <button class="close-btn" (click)="error = null">×</button>
-  </div>
-
-  <!-- Loading Indicator -->
-  <div *ngIf="loading" class="loading">
-    <div class="spinner"></div>
-    Loading...
-  </div>
+  @if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+      <button class="close-btn" (click)="error = null">×</button>
+    </div>
+  }
 
   <!-- List View -->
-  <div *ngIf="currentAction === 'list' && !loading" class="list-view">
-    <div *ngIf="items.length === 0" class="empty-state">
-      <p>No {{ modelName | lowercase }}s found</p>
-      <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
-    </div>
-
-    <div class="items-grid" *ngIf="items.length > 0">
-      <div class="item-card" *ngFor="let item of items" [class.selected]="selectedItem?.id === item.id">
+  @if (currentAction === 'list') {
+    <div class="list-view">
+      @if (items().length === 0) {
+        <div class="empty-state">
+          <p>No {{ modelName | lowercase }}s found</p>
+          <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+        </div>
+      } @else {
+        <div class="items-grid">
+          @for (item of items(); track item.id) {
+            <div class="item-card" [class.selected]="selectedItem?.id === item.id">
         <div class="card-header">
           <span class="badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
           <span class="type-badge" [ngClass]="getTypeClass(item.type)">{{ item.type }}</span>
@@ -46,13 +44,19 @@
           <h3>{{ item.name }}</h3>
           <p class="client">{{ item.client }}</p>
           <p class="description">{{ item.description | slice:0:120 }}{{ item.description.length > 120 ? '...' : '' }}</p>
-          <div class="architecture" *ngIf="item.architecture">
-            <span class="arch-label">Architecture:</span>
-            <span class="arch-value">{{ item.architecture }}</span>
-          </div>
+          @if (item.architecture) {
+            <div class="architecture">
+              <span class="arch-label">Architecture:</span>
+              <span class="arch-value">{{ item.architecture }}</span>
+            </div>
+          }
           <div class="tech-stack">
-            <span class="tech-tag" *ngFor="let tech of item.stack | slice:0:4">{{ tech }}</span>
-            <span class="tech-tag more" *ngIf="item.stack.length > 4">+{{ item.stack.length - 4 }}</span>
+            @for (tech of item.stack | slice:0:4; track tech) {
+              <span class="tech-tag">{{ tech }}</span>
+            }
+            @if (item.stack.length > 4) {
+              <span class="tech-tag more">+{{ item.stack.length - 4 }}</span>
+            }
           </div>
         </div>
         <div class="card-actions">
@@ -61,11 +65,15 @@
           <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
         </div>
       </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- Detail View -->
-  <div *ngIf="isViewing && detailItem" class="detail-view">
+  @if (isViewing && detailItem) {
+    <div class="detail-view">
     <div class="detail-header">
       <h2>{{ detailItem.name }}</h2>
       <div class="header-badges">
@@ -93,7 +101,9 @@
       <div class="detail-section">
         <label>Tech Stack</label>
         <div class="tech-stack">
-          <span class="tech-tag" *ngFor="let tech of detailItem.stack">{{ tech }}</span>
+          @for (tech of detailItem.stack; track tech) {
+            <span class="tech-tag">{{ tech }}</span>
+          }
         </div>
       </div>
     </div>
@@ -103,9 +113,11 @@
       <button class="btn btn-secondary" (click)="cancelAction()">Back to List</button>
     </div>
   </div>
+  }
 
   <!-- Create/Update Form -->
-  <div *ngIf="(isCreating || isUpdating) && !loading" class="form-view">
+  @if (isCreating || isUpdating) {
+    <div class="form-view">
     <div class="form-header">
       <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
     </div>
@@ -145,7 +157,9 @@
             class="form-control" 
             [(ngModel)]="formData.type"
             name="type">
-            <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+            @for (type of typeOptions; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
           </select>
         </div>
 
@@ -156,7 +170,9 @@
             class="form-control" 
             [(ngModel)]="formData.status"
             name="status">
-            <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
           </select>
         </div>
       </div>
@@ -200,9 +216,11 @@
       </div>
     </form>
   </div>
+  }
 
   <!-- Delete Confirmation -->
-  <div *ngIf="isDeleting && !loading" class="delete-confirmation">
+  @if (isDeleting) {
+    <div class="delete-confirmation">
     <div class="confirmation-dialog">
       <h2>Delete {{ modelName }}</h2>
       <p>Are you sure you want to delete this project?</p>
@@ -214,4 +232,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

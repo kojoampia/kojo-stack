@@ -1,4 +1,4 @@
-import { Injectable, isDevMode } from '@angular/core';
+import { Injectable, inject, isDevMode } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -8,7 +8,9 @@ import { StateStorageService } from './state-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserRouteAccessService implements CanActivate {
-  constructor(private readonly router: Router, private readonly accountService: AccountService, private readonly stateStorageService: StateStorageService) {}
+  private readonly router = inject(Router);
+  private readonly accountService = inject(AccountService);
+  private readonly stateStorageService = inject(StateStorageService);
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const authorities = route.data['authorities'];

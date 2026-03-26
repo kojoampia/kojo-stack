@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,14 +13,15 @@ import { ProfileService } from '@app/core/services/profile.service';
   styleUrls: ['./profile-dashboard.component.scss']
 })
 export class ProfileDashboardComponent implements OnInit {
+  private readonly profileService = inject(ProfileService);
+
   modelName = 'UserProfile';
-  items: UserProfile[] = [];
+  items = signal<UserProfile[]>([]);
   selectedItem: UserProfile | null = null;
   isCreating = false;
   isUpdating = false;
   isDeleting = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' = 'list';
-  loading = false;
   error: string | null = null;
 
   formData: Partial<UserProfile> = {
@@ -32,23 +33,18 @@ export class ProfileDashboardComponent implements OnInit {
     avatar: ''
   };
 
-  constructor(private profileService: ProfileService) {}
-
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.profileService.getAll().subscribe({
       next: (items: UserProfile[]) => {
-        this.items = items;
-        this.loading = false;
+        this.items.set(items);
         this.error = null;
       },
       error: (err: any) => {
         this.error = 'Failed to load profiles: ' + err.message;
-        this.loading = false;
       }
     });
   }
@@ -88,29 +84,26 @@ export class ProfileDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
     const profile = { ...this.selectedItem, ...this.formData } as UserProfile;
 
     if (this.isCreating) {
       this.profileService.create(profile).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err: any) => {
           this.error = 'Failed to create profile: ' + err.message;
-          this.loading = false;
         }
       });
     } else if (this.isUpdating && profile.id) {
       this.profileService.update(profile.id, profile).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err: any) => {
           this.error = 'Failed to update profile: ' + err.message;
-          this.loading = false;
         }
       });
     }
@@ -118,15 +111,13 @@ export class ProfileDashboardComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.loading = true;
       this.profileService.delete(this.selectedItem.id).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err: any) => {
           this.error = 'Failed to delete profile: ' + err.message;
-          this.loading = false;
         }
       });
     }

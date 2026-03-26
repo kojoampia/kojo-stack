@@ -1,4 +1,4 @@
-@import '../../shared/styles/dashboard.scss';
+@use '../../shared/styles/dashboard.scss' as *;
 
 .nav-header {
   margin-bottom: 1rem;

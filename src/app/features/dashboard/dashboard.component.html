@@ -84,7 +84,9 @@
                     <div class="text-[10px] uppercase text-slate-500 font-bold">{{ metric.label }}</div>
                     <div class="text-sm font-mono text-slate-200 flex items-center gap-1">
                       {{ metric.value }}
-                      <i class="fas fa-arrow-up text-[10px] text-green-500" *ngIf="metric.trend === 'up'"></i>
+                      @if (metric.trend === 'up') {
+                      <i class="fas fa-arrow-up text-[10px] text-green-500"></i>
+                      }
                     </div>
                   </div>
                 }

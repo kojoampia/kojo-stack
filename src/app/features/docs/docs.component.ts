@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DocumentationService } from '@app/core/services';
 import { Documentation } from '@app/core/models';
@@ -11,10 +11,10 @@ import { Documentation } from '@app/core/models';
   styleUrls: ['./docs.component.scss']
 })
 export class DocsComponent implements OnInit {
+  private readonly docsService = inject(DocumentationService);
+
   docs = signal<Documentation[]>([]);
   selectedDoc = signal<Documentation | null>(null);
-
-  constructor(private docsService: DocumentationService) {}
 
   ngOnInit(): void {
     this.docsService.getDocuments().subscribe(docs => {

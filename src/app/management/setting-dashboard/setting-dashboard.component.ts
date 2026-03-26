@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,14 +13,15 @@ import { SettingsService } from '@app/core/services/settings.service';
   styleUrls: ['./setting-dashboard.component.scss']
 })
 export class SettingDashboardComponent implements OnInit {
+  private readonly settingsService = inject(SettingsService);
+
   modelName = 'Setting';
-  items: Setting[] = [];
+  items = signal<Setting[]>([]);
   selectedItem: Setting | null = null;
   isCreating = false;
   isUpdating = false;
   isDeleting = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' = 'list';
-  loading = false;
   error: string | null = null;
 
   formData: Partial<Setting> = {
@@ -29,22 +30,17 @@ export class SettingDashboardComponent implements OnInit {
     theme: 'light'
   };
 
-  constructor(private settingsService: SettingsService) {}
-
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.settingsService.getAll().subscribe({
       next: (items) => {
-        this.items = items;
-        this.loading = false;
+        this.items.set(items);
       },
       error: (err) => {
         this.error = 'Failed to load settings: ' + err.message;
-        this.loading = false;
       }
     });
   }
@@ -77,29 +73,26 @@ export class SettingDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
     const setting = { ...this.selectedItem, ...this.formData } as Setting;
 
     if (this.isCreating) {
       this.settingsService.create(setting).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err) => {
           this.error = 'Failed to create setting: ' + err.message;
-          this.loading = false;
         }
       });
     } else if (this.isUpdating && setting.id) {
       this.settingsService.update(setting.id, setting).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err) => {
           this.error = 'Failed to update setting: ' + err.message;
-          this.loading = false;
         }
       });
     }
@@ -107,15 +100,13 @@ export class SettingDashboardComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.loading = true;
       this.settingsService.delete(this.selectedItem.id).subscribe({
         next: () => {
-          this.loadItems();
           this.cancelAction();
+          this.loadItems();
         },
         error: (err) => {
           this.error = 'Failed to delete setting: ' + err.message;
-          this.loading = false;
         }
       });
     }

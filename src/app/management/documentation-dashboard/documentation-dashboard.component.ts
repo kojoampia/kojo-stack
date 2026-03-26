@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
 import { Documentation, DocumentType } from '@app/core/models/documentation.model';
 import { DocumentationService } from '@app/core/services/documentation.service';
 
@@ -13,9 +14,11 @@ import { DocumentationService } from '@app/core/services/documentation.service';
   styleUrls: ['./documentation-dashboard.component.scss']
 })
 export class DocumentationDashboardComponent implements OnInit {
+  private readonly documentationService = inject(DocumentationService);
+
   modelName = 'Documentation';
-  items: Documentation[] = [];
-  filteredItems: Documentation[] = [];
+  items = signal<Documentation[]>([]);
+  filteredItems = signal<Documentation[]>([]);
   selectedItem: Documentation | null = null;
   detailItem: Documentation | null = null;
   isCreating = false;
@@ -23,7 +26,6 @@ export class DocumentationDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
   selectedType: DocumentType | 'All' = 'All';
 
@@ -40,32 +42,27 @@ export class DocumentationDashboardComponent implements OnInit {
 
   tagsInput = '';
 
-  constructor(private documentationService: DocumentationService) {}
-
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.documentationService.getDocuments().subscribe({
       next: (items: Documentation[]) => {
-        this.items = items;
+        this.items.set(items);
         this.filterByType();
-        this.loading = false;
       },
       error: (err: any) => {
         this.error = 'Failed to load documentation: ' + err.message;
-        this.loading = false;
       }
     });
   }
 
   filterByType(): void {
     if (this.selectedType === 'All') {
-      this.filteredItems = [...this.items];
+      this.filteredItems.set([...this.items()]);
     } else {
-      this.filteredItems = this.items.filter(d => d.type === this.selectedType);
+      this.filteredItems.set(this.items().filter(d => d.type === this.selectedType));
     }
   }
 
@@ -103,9 +100,11 @@ export class DocumentationDashboardComponent implements OnInit {
   editItem(item: Documentation): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
-    this.formData = { ...item, tags: [...item.tags] };
-    this.tagsInput = item.tags.join(', ');
+    this.formData = { ...item, tags: [...(item.tags || [])] };
+    this.tagsInput = (item.tags || []).join(', ');
     this.error = null;
   }
 
@@ -117,32 +116,48 @@ export class DocumentationDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     // Parse tags from comma-separated input
     this.formData.tags = this.tagsInput.split(',').map(t => t.trim()).filter(t => t);
     this.formData.lastUpdated = new Date().toISOString().split('T')[0];
     
     const doc = { ...this.selectedItem, ...this.formData } as Documentation;
 
+    let save$: Observable<Documentation> | null = null;
     if (this.isCreating) {
-      this.documentationService.createDocument(doc);
-      this.loadItems();
-      this.cancelAction();
+      save$ = this.documentationService.createDocument(doc);
     } else if (this.isUpdating && doc.id) {
-      this.documentationService.updateDocument(doc.id, doc);
-      this.loadItems();
-      this.cancelAction();
+      save$ = this.documentationService.updateDocument(doc.id, doc);
     }
-    this.loading = false;
+
+    if (!save$) {
+      return;
+    }
+
+    save$.subscribe({
+      next: () => {
+        this.cancelAction();
+        this.loadItems();
+      },
+      error: (err: any) => {
+        this.error = 'Failed to save documentation: ' + err.message;
+      }
+    });
   }
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.documentationService.deleteDocument(this.selectedItem.id);
-      this.loadItems();
+      this.documentationService.deleteDocument(this.selectedItem.id).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to delete documentation: ' + err.message;
+        }
+      });
+    } else {
+      this.cancelAction();
     }
-    this.cancelAction();
   }
 
   cancelAction(): void {

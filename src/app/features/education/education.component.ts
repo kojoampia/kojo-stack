@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EducationService } from '@app/core/services/education.service';
 import { Education } from '@app/core/models/education.model';
@@ -11,6 +11,8 @@ import { Education } from '@app/core/models/education.model';
   styleUrls: ['./education.component.scss']
 })
 export class EducationComponent implements OnInit {
+  private readonly educationService = inject(EducationService);
+
   education = signal<Education[]>([]);
   selectedType = signal<string>('All');
   
@@ -42,26 +44,14 @@ export class EducationComponent implements OnInit {
     )
   );
 
-  constructor(private educationService: EducationService) {}
 
   ngOnInit(): void {
     this.educationService.getAll().subscribe({
       next: (education) => {
         if (education && education.length > 0) {
           this.education.set(education);
-        } else {
-          this.loadMockEducation();
         }
-      },
-      error: () => {
-        this.loadMockEducation();
       }
-    });
-  }
-
-  loadMockEducation(): void {
-    this.educationService.getEducation().subscribe(education => {
-      this.education.set(education);
     });
   }
 

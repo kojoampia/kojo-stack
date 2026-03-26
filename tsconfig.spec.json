@@ -5,12 +5,8 @@
     "types": [
       "jasmine"
     ],
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true
+    "esModuleInterop": true
   },
-  "files": [
-    "src/test.ts"
-  ],
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"

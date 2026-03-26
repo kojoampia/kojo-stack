@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AppSettings } from '@app/core/models/setting.model';
+import { SERVER_API_URL } from '@app/app.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private apiUrl = '/api/v1/settings';
-  private settings$ = new BehaviorSubject<AppSettings>({
-    id: 'default',
-    verboseLogging: true,
-    betaFeatures: false,
-    theme: 'default',
-    language: 'en'
-  });
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${SERVER_API_URL}/api/v1/settings`;
 
   getAll(): Observable<AppSettings[]> {
     return this.http.get<AppSettings[]>(this.apiUrl);
@@ -36,14 +29,5 @@ export class SettingsService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  getSettings(): Observable<AppSettings> {
-    return this.settings$.asObservable();
-  }
-
-  updateSettings(settings: Partial<AppSettings>): void {
-    const current = this.settings$.value;
-    this.settings$.next({ ...current, ...settings });
   }
 }

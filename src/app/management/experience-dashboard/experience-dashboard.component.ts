@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -14,8 +14,10 @@ import { ExperienceService } from '@app/core/services/experience.service';
   styleUrls: ['./experience-dashboard.component.scss']
 })
 export class ExperienceDashboardComponent implements OnInit {
+  private readonly experienceService = inject(ExperienceService);
+
   modelName = 'Experience';
-  items: Experience[] = [];
+  items = signal<Experience[]>([]);
   selectedItem: Experience | null = null;
   detailItem: Experience | null = null;
   isCreating = false;
@@ -23,7 +25,6 @@ export class ExperienceDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
 
   statusOptions: ExperienceStatus[] = ['ACTIVE', 'STABLE', 'DEPRECATED', 'MIGRATED', 'COMPLETED', 'PENDING', 'ARCHIVED', 'MAINTENANCE'];
@@ -41,22 +42,17 @@ export class ExperienceDashboardComponent implements OnInit {
   stackInput = '';
   newMetric: Metric = { label: '', value: '', trend: 'stable' };
 
-  constructor(private experienceService: ExperienceService) {}
-
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.experienceService.getExperiences().subscribe({
       next: (items: Experience[]) => {
-        this.items = items;
-        this.loading = false;
+        this.items.set(items);
       },
       error: (err: any) => {
         this.error = 'Failed to load experiences: ' + err.message;
-        this.loading = false;
       }
     });
   }
@@ -92,9 +88,11 @@ export class ExperienceDashboardComponent implements OnInit {
   editItem(item: Experience): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
-    this.formData = { ...item, stack: [...item.stack], metrics: [...item.metrics] };
-    this.stackInput = item.stack.join(', ');
+    this.formData = { ...item, stack: [...(item.stack || [])], metrics: [...(item.metrics || [])] };
+    this.stackInput = (item.stack || []).join(', ');
     this.error = null;
   }
 
@@ -122,28 +120,48 @@ export class ExperienceDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     // Parse stack from comma-separated input
-    this.formData.stack = this.stackInput.split(',').map(s => s.trim()).filter(s => s);
+    this.formData.stack = this.stackInput.split(',').map(s => s.trim()).filter(Boolean);
     
     const experience = { ...this.selectedItem, ...this.formData } as Experience;
 
     if (this.isCreating) {
-      this.experienceService.createExperience(experience);
-      this.loadItems();
-      this.cancelAction();
+      this.experienceService.createExperience(experience).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to create experience: ' + err.message;
+        }
+      });
     } else if (this.isUpdating && experience.id) {
-      this.experienceService.updateExperience(experience.id, experience);
-      this.loadItems();
-      this.cancelAction();
+      this.experienceService.updateExperience(experience.id, experience).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to update experience: ' + err.message;
+        }
+      });
     }
-    this.loading = false;
   }
 
   confirmDelete(): void {
-    this.cancelAction();
-    this.loadItems();
+    if (this.selectedItem?.id) {
+      this.experienceService.deleteExperience(this.selectedItem.id).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to delete experience: ' + err.message;
+        }
+      });
+    } else {
+      this.cancelAction();
+    }
   }
 
   cancelAction(): void {

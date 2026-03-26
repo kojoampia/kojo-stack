@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,8 +13,10 @@ import { EducationService } from '@app/core/services/education.service';
   styleUrls: ['./education-dashboard.component.scss']
 })
 export class EducationDashboardComponent implements OnInit {
+  private readonly educationService = inject(EducationService);
+
   modelName = 'Education';
-  filteredItems: Education[] = [];
+  filteredItems = signal<Education[]>([]);
   selectedItem: Education | null = null;
   detailItem: Education | null = null;
   isCreating = false;
@@ -22,7 +24,6 @@ export class EducationDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
   selectedType: string = 'All';
 
@@ -46,43 +47,27 @@ export class EducationDashboardComponent implements OnInit {
   subjectsInput = '';
   education = signal<Education[]>([]);
 
-  constructor(private educationService: EducationService) {}
-
   ngOnInit(): void {
     this.loadEducation();
   }
 
   loadEducation(): void {
-    this.loading = true;
     this.educationService.getAll().subscribe({
       next: (education) => {
-        if (education && education.length > 0) {
-          this.education.set(education);
-          this.filterByType();
-          this.loading = false;
-        } else {
-          this.loadMockEducation();
-        }
+        this.education.set(education);
+        this.filterByType();
       },
       error: () => {
-        this.loadMockEducation();
+        this.error = 'Failed to load education records';
       }
-    });
-  }
-
-  loadMockEducation(): void {
-    this.educationService.getEducation().subscribe(education => {
-      this.education.set(education);
-      this.filterByType();
-      this.loading = false;
     });
   }
 
   filterByType(): void {
     if (this.selectedType === 'All') {
-      this.filteredItems = [...this.education()];
+      this.filteredItems.set([...this.education()]);
     } else {
-      this.filteredItems = this.education().filter(e => e.type === this.selectedType);
+      this.filteredItems.set(this.education().filter(e => e.type === this.selectedType));
     }
   }
 
@@ -118,6 +103,8 @@ export class EducationDashboardComponent implements OnInit {
   editItem(item: Education): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
     this.formData = { ...item };
     this.subjectsInput = item.subjects?.join(', ') || '';
@@ -132,8 +119,6 @@ export class EducationDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     // Parse subjects from comma-separated string
     this.formData.subjects = this.subjectsInput
       .split(',')
@@ -150,7 +135,6 @@ export class EducationDashboardComponent implements OnInit {
         },
         error: (err) => {
           this.error = 'Failed to create education record';
-          this.loading = false;
         }
       });
     } else if (this.isUpdating && this.selectedItem?.id) {
@@ -161,7 +145,6 @@ export class EducationDashboardComponent implements OnInit {
         },
         error: (err) => {
           this.error = 'Failed to update education record';
-          this.loading = false;
         }
       });
     }
@@ -169,7 +152,6 @@ export class EducationDashboardComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.loading = true;
       this.educationService.delete(this.selectedItem.id).subscribe({
         next: () => {
           this.loadEducation();
@@ -177,7 +159,6 @@ export class EducationDashboardComponent implements OnInit {
         },
         error: (err) => {
           this.error = 'Failed to delete education record';
-          this.loading = false;
         }
       });
     } else {
@@ -196,7 +177,6 @@ export class EducationDashboardComponent implements OnInit {
     this.error = null;
     this.formData = {};
     this.subjectsInput = '';
-    this.loading = false;
   }
 
   getTypeClass(type: string): string {

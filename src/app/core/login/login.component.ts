@@ -1,9 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Subject } from 'rxjs';
 import { LoginService } from './login.service';
 
 @Component({
@@ -13,7 +12,11 @@ import { LoginService } from './login.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent {
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
   username = '';
   password = '';
   loading = false;
@@ -21,19 +24,6 @@ export class LoginComponent implements OnDestroy {
   showPassword = false;
   returnUrl: string | null = null;
   isLoginError = false;
-
-  private readonly destroy$ = new Subject<void>();
-
-  constructor(
-    private readonly loginService: LoginService,
-    private readonly router: Router,
-  ) {}
-
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
   onLogin(): void {
     if (!this.username.trim() || !this.password.trim()) {

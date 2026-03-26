@@ -1,5 +1,5 @@
-import { Directive, Input, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Directive, Input, TemplateRef, ViewContainerRef, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AccountService } from './account.service';
 
@@ -18,24 +18,21 @@ import { AccountService } from './account.service';
   selector: '[ksHasAnyAuthority]',
   standalone: true,
 })
-export class HasAnyAuthorityDirective implements OnDestroy {
+export class HasAnyAuthorityDirective {
+  private readonly accountService = inject(AccountService);
+  private readonly templateRef = inject(TemplateRef<any>);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly destroyRef = inject(DestroyRef);
   private authorities: string[] = [];
-  private authenticationSubscription?: Subscription;
-
-  constructor(private readonly accountService: AccountService, private readonly templateRef: TemplateRef<any>, private viewContainerRef: ViewContainerRef) {}
 
   @Input()
   set ksHasAnyAuthority(value: string | string[]) {
     this.authorities = typeof value === 'string' ? [value] : value;
     this.updateView();
     // Get notified each time authentication state changes.
-    this.authenticationSubscription = this.accountService.getAuthenticationState().subscribe(() => this.updateView());
-  }
-
-  ngOnDestroy(): void {
-    if (this.authenticationSubscription) {
-      this.authenticationSubscription.unsubscribe();
-    }
+    this.accountService.getAuthenticationState()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.updateView());
   }
 
   private updateView(): void {

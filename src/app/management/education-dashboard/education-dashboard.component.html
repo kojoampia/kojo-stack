@@ -12,40 +12,40 @@
     <div class="header-actions">
       <select class="form-control type-filter" [(ngModel)]="selectedType" (change)="onTypeChange()">
         <option value="All">All Types</option>
-        <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+        @for (type of typeOptions; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
       </select>
       <button 
         class="btn btn-primary" 
-        (click)="createItem()"
-        [disabled]="loading">
+        (click)="createItem()">
         + Add New {{ modelName }}
       </button>
     </div>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="error" class="alert alert-error">
-    {{ error }}
-    <button class="close-btn" (click)="error = null">×</button>
-  </div>
-
-  <!-- Loading Indicator -->
-  <div *ngIf="loading" class="loading">
-    <div class="spinner"></div>
-    Loading...
-  </div>
+  @if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+      <button class="close-btn" (click)="error = null">×</button>
+    </div>
+  }
 
   <!-- List View -->
-  <div *ngIf="currentAction === 'list' && !loading" class="list-view">
-    <div *ngIf="filteredItems.length === 0" class="empty-state">
-      <p>No {{ modelName | lowercase }} records found</p>
-      <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
-    </div>
-
-    <div class="education-grid" *ngIf="filteredItems.length > 0">
-      <div class="education-card" *ngFor="let item of filteredItems" 
-           [ngClass]="getTypeClass(item.type)"
-           [class.selected]="selectedItem?.institution === item.institution">
+  @if (currentAction === 'list') {
+    <div class="list-view">
+      @if (filteredItems().length === 0) {
+        <div class="empty-state">
+          <p>No {{ modelName | lowercase }} records found</p>
+          <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+        </div>
+      } @else {
+        <div class="education-grid">
+          @for (item of filteredItems(); track item.institution) {
+            <div class="education-card" 
+                 [ngClass]="getTypeClass(item.type)"
+                 [class.selected]="selectedItem?.institution === item.institution">
         <div class="card-header">
           <span class="type-badge" [ngClass]="getTypeClass(item.type)">{{ item.type }}</span>
         </div>
@@ -57,12 +57,16 @@
             <span>{{ item.duration }}</span>
           </div>
           <div class="subjects-list">
-            <span class="subject-tag" *ngFor="let subject of item.subjects?.slice(0, 3)">
-              {{ subject }}
-            </span>
-            <span *ngIf="item.subjects && item.subjects.length > 3" class="subject-more">
-              +{{ item.subjects.length - 3 }} more
-            </span>
+            @for (subject of item.subjects.slice(0, 3); track subject) {
+              <span class="subject-tag">
+                {{ subject }}
+              </span>
+            }
+            @if (item.subjects && item.subjects.length > 3) {
+              <span class="subject-more">
+                +{{ item.subjects.length - 3 }} more
+              </span>
+            }
           </div>
         </div>
         <div class="card-actions">
@@ -71,11 +75,15 @@
           <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
         </div>
       </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- Detail View -->
-  <div *ngIf="isViewing && detailItem" class="detail-view">
+  @if (isViewing && detailItem) {
+    <div class="detail-view">
     <div class="detail-header">
       <div class="education-icon-large">{{ getTypeIcon(detailItem.type) }}</div>
       <h2>{{ detailItem.institution }}</h2>
@@ -91,9 +99,11 @@
       <div class="detail-section">
         <label>Subjects</label>
         <div class="subjects-detail">
-          <span class="subject-tag" *ngFor="let subject of detailItem.subjects">
-            {{ subject }}
-          </span>
+          @for (subject of detailItem.subjects; track subject) {
+            <span class="subject-tag">
+              {{ subject }}
+            </span>
+          }
         </div>
       </div>
       
@@ -108,9 +118,11 @@
       <button class="btn btn-secondary" (click)="cancelAction()">Back to List</button>
     </div>
   </div>
+  }
 
   <!-- Create/Update Form -->
-  <div *ngIf="(isCreating || isUpdating) && !loading" class="form-view">
+  @if (isCreating || isUpdating) {
+    <div class="form-view">
     <div class="form-header">
       <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
     </div>
@@ -138,7 +150,9 @@
             class="form-control" 
             [(ngModel)]="formData.type"
             name="type">
-            <option *ngFor="let type of typeOptions" [value]="type">{{ type }}</option>
+            @for (type of typeOptions; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
           </select>
         </div>
 
@@ -174,9 +188,11 @@
       </div>
     </form>
   </div>
+  }
 
   <!-- Delete Confirmation -->
-  <div *ngIf="isDeleting && !loading" class="delete-confirmation">
+  @if (isDeleting) {
+    <div class="delete-confirmation">
     <div class="confirmation-dialog">
       <h2>Delete {{ modelName }}</h2>
       <p>Are you sure you want to delete this education record?</p>
@@ -188,4 +204,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

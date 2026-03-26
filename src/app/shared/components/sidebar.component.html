@@ -11,12 +11,13 @@
           [class.hidden]="avatarError()"
           (error)="onAvatarError()"
         >
-      <div 
-        *ngIf="avatarError()" 
-        class="w-full h-full rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20 border-2 border-cyan-500/50"
-      >
+        @if (avatarError()) {
+        <div 
+          class="w-full h-full rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20 border-2 border-cyan-500/50"
+        >
           JK
         </div>
+        }
       </div>
       <span class="font-bold text-lg tracking-tight hidden lg:block text-slate-100">Kojo.Stack</span>
     </div>
@@ -49,23 +50,25 @@
       <div class="mt-2 text-xs text-slate-400">Uptime: 99.99%</div>
       
       <!-- Admin Button -->
+      @if (!isLoggedIn()) {
       <button 
-        *ngIf="!isLoggedIn()"
         (click)="onAdminClick()"
         class="w-full mt-4 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-xs font-semibold rounded transition-all duration-200 flex items-center justify-center gap-2"
         title="Admin Dashboard">
         <span>⚙️</span>
         <span>Admin</span>
       </button>
+      }
 
       <!-- Logout Button -->
+      @if (isLoggedIn()) {
       <button 
-        *ngIf="isLoggedIn()"
         (click)="onLogout()"
         class="w-full mt-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded transition-all duration-200"
         title="Logout">
         Logout
       </button>
+      }
     </div>
   </div>
 </nav>

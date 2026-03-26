@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,9 +15,11 @@ type InquiryStatus = 'New' | 'Contacted' | 'In Progress' | 'Closed';
   styleUrls: ['./inquiry-dashboard.component.scss']
 })
 export class InquiryDashboardComponent implements OnInit {
+  private readonly inquiryService = inject(InquiryService);
+
   modelName = 'Inquiry';
-  items: Inquiry[] = [];
-  filteredItems: Inquiry[] = [];
+  items = signal<Inquiry[]>([]);
+  filteredItems = signal<Inquiry[]>([]);
   selectedItem: Inquiry | null = null;
   detailItem: Inquiry | null = null;
   isCreating = false;
@@ -25,47 +27,41 @@ export class InquiryDashboardComponent implements OnInit {
   isDeleting = false;
   isViewing = false;
   currentAction: 'list' | 'create' | 'update' | 'delete' | 'view' = 'list';
-  loading = false;
   error: string | null = null;
   selectedStatus: InquiryStatus | 'All' = 'All';
 
-  typeOptions: ProjectType[] = ['Microservices', 'Monolith', 'Migration', 'DevOps', 'Architecture', 'ETL', 'Monitoring'];
+  typeOptions: ProjectType[] = ['MICROSERVICES', 'DEVOPS', 'BACKEND_SERVICE', 'FRONTEND', 'FULL_STACK', 'DATA_ENGINEERING', 'CONSULTING', 'MIGRATION', 'ETL', 'MONITORING'];
   statusOptions: InquiryStatus[] = ['New', 'Contacted', 'In Progress', 'Closed'];
 
   formData: Partial<Inquiry> = {
     name: '',
     email: '',
-    type: 'Microservices',
+    type: 'MICROSERVICES',
     message: '',
     status: 'New'
   };
-
-  constructor(private inquiryService: InquiryService) {}
 
   ngOnInit(): void {
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
     this.inquiryService.getInquiries().subscribe({
       next: (items: Inquiry[]) => {
-        this.items = items;
+        this.items.set(items);
         this.filterByStatus();
-        this.loading = false;
       },
       error: (err: any) => {
         this.error = 'Failed to load inquiries: ' + err.message;
-        this.loading = false;
       }
     });
   }
 
   filterByStatus(): void {
     if (this.selectedStatus === 'All') {
-      this.filteredItems = [...this.items];
+      this.filteredItems.set([...this.items()]);
     } else {
-      this.filteredItems = this.items.filter(i => i.status === this.selectedStatus);
+      this.filteredItems.set(this.items().filter(i => i.status === this.selectedStatus));
     }
   }
 
@@ -91,7 +87,7 @@ export class InquiryDashboardComponent implements OnInit {
     this.formData = {
       name: '',
       email: '',
-      type: 'Microservices',
+      type: 'MICROSERVICES',
       message: '',
       status: 'New'
     };
@@ -101,6 +97,8 @@ export class InquiryDashboardComponent implements OnInit {
   editItem(item: Inquiry): void {
     this.currentAction = 'update';
     this.isUpdating = true;
+    this.isViewing = false;
+    this.detailItem = null;
     this.selectedItem = item;
     this.formData = { ...item };
     this.error = null;
@@ -114,28 +112,45 @@ export class InquiryDashboardComponent implements OnInit {
   }
 
   saveItem(): void {
-    this.loading = true;
-    
     const inquiry = { ...this.selectedItem, ...this.formData } as Inquiry;
 
     if (this.isCreating) {
-      this.inquiryService.createInquiry(inquiry);
-      this.loadItems();
-      this.cancelAction();
+      this.inquiryService.createInquiry(inquiry).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to create inquiry: ' + err.message;
+        }
+      });
     } else if (this.isUpdating && inquiry.id) {
-      this.inquiryService.updateInquiry(inquiry.id, inquiry);
-      this.loadItems();
-      this.cancelAction();
+      this.inquiryService.updateInquiry(inquiry.id, inquiry).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to update inquiry: ' + err.message;
+        }
+      });
     }
-    this.loading = false;
   }
 
   confirmDelete(): void {
     if (this.selectedItem?.id) {
-      this.inquiryService.deleteInquiry(this.selectedItem.id);
-      this.loadItems();
+      this.inquiryService.deleteInquiry(this.selectedItem.id).subscribe({
+        next: () => {
+          this.cancelAction();
+          this.loadItems();
+        },
+        error: (err: any) => {
+          this.error = 'Failed to delete inquiry: ' + err.message;
+        }
+      });
+    } else {
+      this.cancelAction();
     }
-    this.cancelAction();
   }
 
   cancelAction(): void {
@@ -166,7 +181,7 @@ export class InquiryDashboardComponent implements OnInit {
 
   getTypeClass(type: string): string {
     const typeClasses: { [key: string]: string } = {
-      'Microservices': 'type-microservices',
+      ' MICROSERVICES': 'type-microservices',
       'Monolith': 'type-monolith',
       'Migration': 'type-migration',
       'DevOps': 'type-devops',
