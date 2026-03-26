@@ -1,5 +1,5 @@
 # Stage 1: Build Angular Application
-FROM node:20-alpine AS builder
+FROM node:24-alpine3.23 AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist/kojo-stack /usr/share/nginx/html
+COPY --from=builder /app/dist/kojo-stack/browser /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
