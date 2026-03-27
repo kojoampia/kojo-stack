@@ -9,6 +9,7 @@ import { ProjectDashboardComponent } from './project-dashboard/project-dashboard
 import { InquiryDashboardComponent } from './inquiry-dashboard/inquiry-dashboard.component';
 import { MetricDashboardComponent } from './metric-dashboard/metric-dashboard.component';
 import { EducationDashboardComponent } from './education-dashboard/education-dashboard.component';
+import { KpiDashboardComponent } from './kpi-dashboard/kpi-dashboard.component';
 
 export const MANAGEMENT_ROUTES: Routes = [
   {
@@ -60,5 +61,10 @@ export const MANAGEMENT_ROUTES: Routes = [
     path: 'education',
     component: EducationDashboardComponent,
     data: { title: 'Education Management' }
+  },
+  {
+    path: 'kpis',
+    component: KpiDashboardComponent,
+    data: { title: 'KPI Management' }
   }
 ];

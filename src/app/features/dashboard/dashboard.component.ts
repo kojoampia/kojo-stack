@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ExperienceService, SkillsService } from '@app/core/services';
-import { Experience, SkillCategory, TechSkill} from '@app/core/models';
+import { ExperienceService, SkillsService, KpiService } from '@app/core/services';
+import { Experience, SkillCategory, TechSkill, Kpi } from '@app/core/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,8 +13,10 @@ import { Experience, SkillCategory, TechSkill} from '@app/core/models';
 export class DashboardComponent implements OnInit {
   private readonly experienceService = inject(ExperienceService);
   private readonly skillsService = inject(SkillsService);
+  private readonly kpiService = inject(KpiService);
 
   experiences = signal<Experience[]>([]);
+  kpis = signal<Kpi[]>([]);
   projectCount = computed(() => this.experiences().length);
   categories: SkillCategory[] = ['Backend', 'DevOps', 'Frontend', 'Data'];
   techSkills = signal<TechSkill[]>([]);
@@ -29,6 +31,11 @@ export class DashboardComponent implements OnInit {
       if (skills && skills.length > 0) {
         this.techSkills.set(skills);
         this.setSkillCategories();
+      }
+    });
+    this.kpiService.getAll().subscribe(kpis => {
+      if (kpis && kpis.length > 0) {
+        this.kpis.set(kpis);
       }
     });
   }

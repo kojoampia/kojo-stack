@@ -108,6 +108,14 @@ export class AdminDashboardComponent implements OnInit {
         emoji: '📊',
         route: '/management/metrics',
         color: 'accent'
+      },
+      {
+        title: 'KPIs',
+        description: 'Manage KPI cards',
+        icon: 'show_chart',
+        emoji: '📈',
+        route: '/management/kpis',
+        color: 'primary'
       }
     ];
   }

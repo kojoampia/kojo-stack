@@ -7,3 +7,4 @@ export * from './metric.model';
 export * from './setting.model';
 export * from './profile.model';
 export * from './education.model';
+export * from './kpi.model';

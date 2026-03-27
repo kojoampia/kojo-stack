@@ -1,30 +1,41 @@
 <div class="space-y-8">
   <!-- KPI Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-lg hover:border-cyan-500/50 transition-colors">
-      <div class="text-slate-400 text-xs font-mono uppercase tracking-wider mb-1">Total Experience</div>
-      <div class="text-3xl font-bold text-white">16+ <span class="text-sm text-slate-500 font-normal">Years</span></div>
-      <div class="mt-2 h-1 w-full bg-slate-700 rounded-full overflow-hidden">
-        <div class="h-full bg-cyan-500 w-[95%]"></div>
+    @for (kpi of kpis(); track kpi.id) {
+      <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-lg hover:border-{{kpi.color}}-500/50 transition-colors">
+        <div class="text-slate-400 text-xs font-mono uppercase tracking-wider mb-1">{{ kpi.label }}</div>
+        <div class="text-3xl font-bold" [ngClass]="kpi.color === 'orange' ? 'text-orange-400' : 'text-white'">
+          {{ kpi.value }}
+          @if (kpi.unit) {
+            <span class="text-sm text-slate-500 font-normal">{{ kpi.unit }}</span>
+          }
+        </div>
+        @if (kpi.progress) {
+          <div class="mt-2 h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+            <div class="h-full rounded-full"
+                 [style.width.%]="kpi.progress"
+                 [ngClass]="{
+                   'bg-cyan-500': kpi.color === 'cyan',
+                   'bg-purple-500': kpi.color === 'purple',
+                   'bg-green-500': kpi.color === 'green',
+                   'bg-orange-500': kpi.color === 'orange'
+                 }">
+            </div>
+          </div>
+        }
+        @if (kpi.subtitle) {
+          <div class="text-xs mt-1"
+               [ngClass]="{
+                 'text-cyan-400': kpi.color === 'cyan',
+                 'text-purple-400': kpi.color === 'purple',
+                 'text-green-400': kpi.color === 'green',
+                 'text-slate-400': kpi.color === 'orange'
+               }">
+            {{ kpi.subtitle }}
+          </div>
+        }
       </div>
-    </div>
-    <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-lg hover:border-purple-500/50 transition-colors">
-      <div class="text-slate-400 text-xs font-mono uppercase tracking-wider mb-1">Projects Delivered</div>
-      <div class="text-3xl font-bold text-white">{{ projectCount() }} <span class="text-sm text-slate-500 font-normal">Systems</span></div>
-      <div class="mt-2 h-1 w-full bg-slate-700 rounded-full overflow-hidden">
-        <div class="h-full bg-purple-500 w-[85%]"></div>
-      </div>
-    </div>
-    <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-lg hover:border-green-500/50 transition-colors">
-      <div class="text-slate-400 text-xs font-mono uppercase tracking-wider mb-1">Stack Coverage</div>
-      <div class="text-3xl font-bold text-white">Full <span class="text-sm text-slate-500 font-normal">Stack</span></div>
-      <div class="text-xs text-green-400 mt-1">Java • Angular • K8s</div>
-    </div>
-    <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-lg hover:border-orange-500/50 transition-colors">
-      <div class="text-slate-400 text-xs font-mono uppercase tracking-wider mb-1">Current Status</div>
-      <div class="text-3xl font-bold text-orange-400">BUSY</div>
-      <div class="text-xs text-slate-400 mt-1">&#64; BRZ (Federal Computing)</div>
-    </div>
+    }
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -7,3 +7,4 @@ export * from './settings.service';
 export * from './education.service';
 export * from './metric.service';
 export * from './inquiry.service';
+export * from './kpi.service';
