@@ -3,7 +3,7 @@ node_modules/
 dist/
 out-tsc/
 .angular
-*.html
+upcoming/
 
 # Environment files (keep .example)
 .env

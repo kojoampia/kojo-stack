@@ -1,0 +1,274 @@
+<div class="model-dashboard">
+  <!-- Back to Admin Button -->
+  <div class="nav-header">
+    <a routerLink="/management" class="btn btn-back">
+      ← Back to Admin Dashboard
+    </a>
+  </div>
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>📈 {{ modelName }} Management</h1>
+    <div class="header-actions">
+      <button
+        class="btn btn-primary"
+        (click)="createItem()">
+        + Add New {{ modelName }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+      <button class="close-btn" (click)="error = null">×</button>
+    </div>
+  }
+
+  <!-- List View -->
+  @if (currentAction === 'list') {
+    <div class="list-view">
+      @if (items().length === 0) {
+        <div class="empty-state">
+          <p>No {{ modelName }}s found</p>
+          <button class="btn btn-primary" (click)="createItem()">Create First {{ modelName }}</button>
+        </div>
+      } @else {
+        <div class="kpi-grid">
+          @for (item of items(); track item.id) {
+            <div class="kpi-card"
+                 [ngClass]="getColorClass(item.color)"
+                 [class.selected]="selectedItem?.id === item.id">
+              <div class="card-header">
+                <span class="color-badge" [ngClass]="getColorClass(item.color)">
+                  {{ getColorLabel(item.color) }}
+                </span>
+                @if (item.sortOrder) {
+                  <span class="sort-badge">#{{ item.sortOrder }}</span>
+                }
+              </div>
+              <div class="card-body">
+                <div class="kpi-value-display">
+                  <span class="kpi-value">{{ item.value }}</span>
+                  @if (item.unit) {
+                    <span class="kpi-unit">{{ item.unit }}</span>
+                  }
+                </div>
+                <h3>{{ item.label }}</h3>
+                @if (item.progress !== undefined && item.progress !== null) {
+                  <div class="progress-bar">
+                    <div class="progress-fill" [ngClass]="getColorClass(item.color)" [style.width.%]="item.progress"></div>
+                  </div>
+                  <span class="progress-label">{{ item.progress }}%</span>
+                }
+                @if (item.subtitle) {
+                  <p class="subtitle">{{ item.subtitle }}</p>
+                }
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-sm btn-view" (click)="viewItem(item)">View</button>
+                <button class="btn btn-sm btn-info" (click)="editItem(item)">Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteItem(item)">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Detail View -->
+  @if (isViewing && detailItem) {
+    <div class="detail-view">
+      <div class="detail-header">
+        <span class="color-badge" [ngClass]="getColorClass(detailItem.color)">
+          {{ getColorLabel(detailItem.color) }}
+        </span>
+        <h2>{{ detailItem.label }}</h2>
+      </div>
+
+      <div class="detail-content">
+        <div class="kpi-display">
+          <div class="big-value">
+            {{ detailItem.value }}
+            @if (detailItem.unit) {
+              <span class="unit-label">{{ detailItem.unit }}</span>
+            }
+          </div>
+          @if (detailItem.progress !== undefined && detailItem.progress !== null) {
+            <div class="progress-bar large">
+              <div class="progress-fill" [ngClass]="getColorClass(detailItem.color)" [style.width.%]="detailItem.progress"></div>
+            </div>
+            <div class="progress-label">Progress: {{ detailItem.progress }}%</div>
+          }
+        </div>
+
+        @if (detailItem.subtitle) {
+          <div class="detail-section">
+            <label>Subtitle</label>
+            <p>{{ detailItem.subtitle }}</p>
+          </div>
+        }
+
+        @if (detailItem.icon) {
+          <div class="detail-section">
+            <label>Icon</label>
+            <p><i class="fas {{ detailItem.icon }}"></i> {{ detailItem.icon }}</p>
+          </div>
+        }
+
+        <div class="detail-section">
+          <label>Color</label>
+          <p><span class="color-dot" [ngClass]="getColorClass(detailItem.color)"></span> {{ getColorLabel(detailItem.color) }}</p>
+        </div>
+
+        @if (detailItem.sortOrder) {
+          <div class="detail-section">
+            <label>Sort Order</label>
+            <p>{{ detailItem.sortOrder }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn btn-info" (click)="editItem(detailItem)">Edit</button>
+        <button class="btn btn-secondary" (click)="cancelAction()">Back to List</button>
+      </div>
+    </div>
+  }
+
+  <!-- Create/Update Form -->
+  @if (isCreating || isUpdating) {
+    <div class="form-view">
+      <div class="form-header">
+        <h2>{{ isCreating ? 'Create' : 'Edit' }} {{ modelName }}</h2>
+      </div>
+
+      <form class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="label">Label *</label>
+            <input
+              id="label"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.label"
+              name="label"
+              placeholder="e.g., Total Experience"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="value">Value *</label>
+            <input
+              id="value"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.value"
+              name="value"
+              placeholder="e.g., 16+, Full, BUSY"
+              required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <input
+              id="unit"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.unit"
+              name="unit"
+              placeholder="e.g., Years, Stack, Systems">
+          </div>
+
+          <div class="form-group">
+            <label for="color">Color</label>
+            <select
+              id="color"
+              class="form-control"
+              [(ngModel)]="formData.color"
+              name="color">
+              @for (c of colorOptions; track c) {
+                <option [value]="c">{{ c | titlecase }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="icon">Icon (FontAwesome class)</label>
+            <input
+              id="icon"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.icon"
+              name="icon"
+              placeholder="e.g., fa-clock, fa-layer-group">
+          </div>
+
+          <div class="form-group">
+            <label for="sortOrder">Sort Order</label>
+            <input
+              id="sortOrder"
+              type="number"
+              class="form-control"
+              [(ngModel)]="formData.sortOrder"
+              name="sortOrder"
+              placeholder="e.g., 1, 2, 3">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="progress">Progress (%)</label>
+            <input
+              id="progress"
+              type="number"
+              class="form-control"
+              [(ngModel)]="formData.progress"
+              name="progress"
+              min="0"
+              max="100"
+              placeholder="0-100">
+          </div>
+
+          <div class="form-group">
+            <label for="subtitle">Subtitle</label>
+            <input
+              id="subtitle"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.subtitle"
+              name="subtitle"
+              placeholder="e.g., Java • Angular • K8s">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" (click)="saveItem()">Save</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Delete Confirmation -->
+  @if (isDeleting) {
+    <div class="delete-confirmation">
+      <div class="confirmation-dialog">
+        <h2>Delete {{ modelName }}</h2>
+        <p>Are you sure you want to delete this KPI?</p>
+        <p class="item-info">{{ selectedItem?.label }}: {{ selectedItem?.value }} {{ selectedItem?.unit }}</p>
+
+        <div class="confirmation-actions">
+          <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+          <button class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
