@@ -10,6 +10,9 @@ import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { authExpiredInterceptor } from './app/core/interceptors/auth-expired.interceptor';
 import { errorHandlerInterceptor } from './app/core/interceptors/errorhandler.interceptor';
 import { notificationInterceptor } from './app/core/interceptors/notification.interceptor';
+import { initializeOpenTelemetry } from './app/core/observability/opentelemetry';
+
+initializeOpenTelemetry();
 
 const appConfig: ApplicationConfig = {
   providers: [
