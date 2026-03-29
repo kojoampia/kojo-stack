@@ -1,0 +1,159 @@
+<div class="model-dashboard">
+  <!-- Back to Admin Button -->
+  <div class="nav-header">
+    <a routerLink="/management" class="btn btn-back">
+      ← Back to Admin Dashboard
+    </a>
+  </div>
+
+  <div class="dashboard-header">
+    <h1>👤 Account Details</h1>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+      <button class="close-btn" (click)="error.set(null)">×</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Loading account details...</span>
+    </div>
+  }
+
+  @if (account(); as acct) {
+    <!-- Account Info Section -->
+    <div class="account-section">
+      <div class="section-header">
+        <h2>Profile Information</h2>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Username</label>
+          <span>{{ acct.login }}</span>
+        </div>
+        <div class="info-item">
+          <label>First Name</label>
+          <span>{{ acct.firstName }}</span>
+        </div>
+        <div class="info-item">
+          <label>Last Name</label>
+          <span>{{ acct.lastName }}</span>
+        </div>
+        <div class="info-item">
+          <label>Email</label>
+          <span>{{ acct.email }}</span>
+        </div>
+        <div class="info-item">
+          <label>Language</label>
+          <span>{{ acct.langKey || 'en' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Status</label>
+          <span class="badge" [class.badge-success]="acct.activated" [class.badge-default]="!acct.activated">
+            {{ acct.activated ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="info-item full-width">
+          <label>Roles</label>
+          <div class="roles-list">
+            @for (role of acct.authoritiesAsArray; track role) {
+              <span class="badge badge-role">{{ role }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Change Section -->
+    <div class="account-section">
+      <div class="section-header">
+        <h2>Security</h2>
+        @if (!showPasswordForm()) {
+          <button class="btn btn-primary" (click)="togglePasswordForm()">
+            Change Password
+          </button>
+        }
+      </div>
+
+      @if (passwordSuccess()) {
+        <div class="alert alert-success">
+          {{ passwordSuccess() }}
+          <button class="close-btn" (click)="passwordSuccess.set(null)">×</button>
+        </div>
+      }
+
+      @if (showPasswordForm()) {
+        <div class="password-form">
+          @if (passwordError()) {
+            <div class="alert alert-error">
+              {{ passwordError() }}
+              <button class="close-btn" (click)="passwordError.set(null)">×</button>
+            </div>
+          }
+
+          <form class="form" (ngSubmit)="changePassword()">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <input
+                id="currentPassword"
+                type="password"
+                class="form-control"
+                [(ngModel)]="passwordData.currentPassword"
+                name="currentPassword"
+                required
+                autocomplete="current-password"
+                placeholder="Enter current password">
+            </div>
+
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input
+                id="newPassword"
+                type="password"
+                class="form-control"
+                [(ngModel)]="passwordData.newPassword"
+                name="newPassword"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                placeholder="Minimum 8 characters">
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                class="form-control"
+                [(ngModel)]="passwordData.confirmPassword"
+                name="confirmPassword"
+                required
+                autocomplete="new-password"
+                placeholder="Re-enter new password">
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="passwordChanging()">
+                {{ passwordChanging() ? 'Changing...' : 'Update Password' }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="cancelPasswordChange()"
+                [disabled]="passwordChanging()">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  }
+</div>

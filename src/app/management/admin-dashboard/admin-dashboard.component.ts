@@ -116,6 +116,14 @@ export class AdminDashboardComponent implements OnInit {
         emoji: '📈',
         route: '/management/kpis',
         color: 'primary'
+      },
+      {
+        title: 'Account',
+        description: 'View account details & change password',
+        icon: 'person',
+        emoji: '🔐',
+        route: '/management/account',
+        color: 'accent'
       }
     ];
   }

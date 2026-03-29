@@ -25,6 +25,10 @@ export class AccountService {
     return this.http.put(SERVER_API_URL + '/api/v1/account', account);
   }
 
+  changePassword(currentPassword: string, newPassword: string): Observable<{}> {
+    return this.http.post(SERVER_API_URL + '/api/v1/account/change-password', { currentPassword, newPassword });
+  }
+
   authenticate(identity: Account | null): void {
     this.userIdentity = identity;
     this.authenticationState.next(this.userIdentity);
