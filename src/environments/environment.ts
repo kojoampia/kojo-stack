@@ -6,8 +6,8 @@ export const environment = {
     enabled: true,
     serviceName: 'kojo-stack-web',
     serviceVersion: '2026.1.0',
-    tracesEndpoint: 'http://localhost:4318/v1/traces',
-    metricsEndpoint: 'http://localhost:4318/v1/metrics',
-    logsEndpoint: 'http://localhost:4318/v1/logs'
+    tracesEndpoint: 'http://localhost:5318/v1/traces',
+    metricsEndpoint: 'http://localhost:5318/v1/metrics',
+    logsEndpoint: 'http://localhost:5318/v1/logs'
   }
 };
