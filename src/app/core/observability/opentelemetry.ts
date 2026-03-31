@@ -16,6 +16,10 @@ import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { environment } from '../../../environments/environment';
 
+function resolveUrl(endpoint: string): string {
+  return endpoint.startsWith('/') ? `${window.location.origin}${endpoint}` : endpoint;
+}
+
 let initialized = false;
 
 export function initializeOpenTelemetry(): void {
@@ -36,7 +40,7 @@ export function initializeOpenTelemetry(): void {
   });
 
   const traceExporter = new OTLPTraceExporter({
-    url: environment.observability.tracesEndpoint
+    url: resolveUrl(environment.observability.tracesEndpoint)
   });
 
   const tracerProvider = new WebTracerProvider({ resource });
@@ -46,7 +50,7 @@ export function initializeOpenTelemetry(): void {
   });
 
   const metricExporter = new OTLPMetricExporter({
-    url: environment.observability.metricsEndpoint
+    url: resolveUrl(environment.observability.metricsEndpoint)
   });
 
   const meterProvider = new MeterProvider({ resource });
@@ -58,7 +62,7 @@ export function initializeOpenTelemetry(): void {
   );
 
   const logExporter = new OTLPLogExporter({
-    url: environment.observability.logsEndpoint
+    url: resolveUrl(environment.observability.logsEndpoint)
   });
 
   const loggerProvider = new LoggerProvider({ resource });
