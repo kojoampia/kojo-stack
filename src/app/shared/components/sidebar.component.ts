@@ -24,7 +24,17 @@ export class SidebarComponent implements OnInit {
 
   currentView = signal<string>('Dashboard');
   avatarError = signal(false);
+  collapsed = signal(false);
   navItems = ['Dashboard', 'Projects', 'Docs', 'Education', 'Settings', 'Hire'];
+  navIcons: Record<string, string> = {
+    Dashboard: 'fas fa-th-large',
+    Projects: 'fas fa-folder-open',
+    Docs: 'fas fa-file-alt',
+    Education: 'fas fa-graduation-cap',
+    Settings: 'fas fa-cog',
+    Hire: 'fas fa-handshake',
+    Management: 'fas fa-shield-alt',
+  };
   isLoggedIn = signal<boolean>(false);
   profile = signal<UserProfile | null>(null);
 
@@ -72,5 +82,9 @@ export class SidebarComponent implements OnInit {
 
   onAvatarError(): void {
     this.avatarError.set(true);
+  }
+
+  toggleCollapsed(): void {
+    this.collapsed.update(v => !v);
   }
 }
