@@ -23,6 +23,16 @@
     </div>
 
     <div class="px-3 py-2 space-y-1 flex-1">
+      @if (isLoggedIn()) {
+        <button 
+          (click)="onAdminClick()"
+          [ngClass]="currentView() === 'Management' ? 'bg-blue-600/10 text-cyan-400 border-l-4 border-cyan-400' : 'border-l-4 border-transparent text-slate-400 hover:text-slate-200'"
+          class="w-full text-left px-4 py-3 rounded-r transition-all hover:bg-slate-900 text-sm font-medium flex items-center gap-3 group"
+        >
+          <i class="fas fa-circle text-[8px] opacity-50 group-hover:text-cyan-400 transition-colors"></i>
+          <span class="hidden lg:block">Administration</span>
+        </button>
+      }
       @for (view of navItems; track view) {
         <button 
           (click)="onNavClick(view)"
