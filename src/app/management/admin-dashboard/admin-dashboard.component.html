@@ -1,7 +1,17 @@
 <div class="admin-dashboard">
   <div class="dashboard-header">
-    <h1>Administration Dashboard</h1>
-    <p>Manage all system models and configurations</p>
+    <div class="header-top">
+      <div>
+        <h1>Administration Dashboard</h1>
+        <p>Manage all system models and configurations</p>
+      </div>
+      <button
+        (click)="onLogout()"
+        class="logout-btn"
+        title="Logout">
+        Logout
+      </button>
+    </div>
   </div>
 
   <div class="menu-grid">

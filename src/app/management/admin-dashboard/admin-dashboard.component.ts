@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { LoginService } from '@app/core/login/login.service';
 
 export interface DashboardMenuItem {
   title: string;
@@ -19,6 +20,9 @@ export interface DashboardMenuItem {
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
+
   menuItems: DashboardMenuItem[] = [];
   iconMap: { [key: string]: string } = {
     person: '👤',
@@ -33,6 +37,11 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeMenuItems();
+  }
+
+  onLogout(): void {
+    this.loginService.logout();
+    this.router.navigate(['/']);
   }
 
   private initializeMenuItems(): void {

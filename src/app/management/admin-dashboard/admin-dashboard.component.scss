@@ -6,7 +6,13 @@
 
 .dashboard-header {
   margin-bottom: 3rem;
-  text-align: center;
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
 
   h1 {
     font-size: 2.5rem;
@@ -19,6 +25,23 @@
     font-size: 1.1rem;
     color: #666;
     margin: 0;
+  }
+}
+
+.logout-btn {
+  padding: 0.5rem 1.25rem;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: #dc2626;
   }
 }
 
