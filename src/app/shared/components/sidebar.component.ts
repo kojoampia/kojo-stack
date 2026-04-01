@@ -29,8 +29,12 @@ export class SidebarComponent implements OnInit {
   profile = signal<UserProfile | null>(null);
 
   ngOnInit(): void {
-    // Check authentication status
-    this.isLoggedIn.set(this.accountService.isAuthenticated());
+    // Reactively update login status from auth state changes
+    this.accountService.getAuthenticationState()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(account => {
+        this.isLoggedIn.set(account !== null);
+      });
 
     // Update currentView when route changes
     this.router.events
