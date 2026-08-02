@@ -35,8 +35,8 @@ src/
 
 ### 1. **Modular Architecture**
 - Separation of concerns with core, features, and shared modules
-- Standalone components with Angular 17+
-- Lazy-loadable feature modules
+- Standalone components (Angular 19)
+- Feature-based route structure (routes are currently eagerly imported; see plan.md G11)
 
 ### 2. **State Management**
 - RxJS signals for reactive state
@@ -58,7 +58,7 @@ src/
 ### 5. **Routing**
 - Feature-based routing structure
 - Default route navigation
-- Lazy loading ready
+- `/management` guarded by `UserRouteAccessService` requiring `ROLE_ADMIN`
 
 ### 6. **Styling**
 - Tailwind CSS for utility-first styling
@@ -94,7 +94,14 @@ npm run build:prod
 ## Running Tests
 
 ```bash
-npm test
+npm test          # interactive watch mode
+npm run test:ci   # single headless run, used by CI
+```
+
+## Linting
+
+```bash
+npm run lint
 ```
 
 ## Development Best Practices
@@ -140,12 +147,14 @@ export class ExampleService {
 ## Environment Configuration
 
 ### Development (`src/environments/environment.ts`)
-- API: `http://localhost:4200/api`
+- API: `http://localhost:8085` (the API's dev profile overrides its default 8080)
 - Log Level: `debug`
+- OTLP telemetry: `http://localhost:5318`
 
 ### Production (`src/environments/environment.prod.ts`)
-- API: `https://kojo-stack.example.com/api`
+- API: relative URLs; nginx proxies `/api/` to the `kojo-stack-api` container
 - Log Level: `error`
+- OTLP telemetry: relative `/otlp/*`, proxied to the collector
 
 ## TypeScript Path Aliases
 
@@ -169,9 +178,12 @@ export class ExampleService {
 
 1. **OnPush Change Detection**: All components use OnPush strategy
 2. **Standalone Components**: Reduced bundle size
-3. **Lazy Loading Ready**: Feature modules can be lazy loaded
-4. **Tree Shaking**: Unused code automatically removed in production
-5. **Signals API**: Efficient reactivity without RxJS overhead
+3. **Tree Shaking**: Unused code automatically removed in production
+4. **Signals API**: Efficient reactivity without RxJS overhead
+
+> Note: routes are eagerly imported today, so the admin dashboards ship to every
+> visitor and the initial bundle exceeds its 1 MB budget. Converting `/management`
+> to `loadChildren` is tracked as G11 in `plan.md`.
 
 ## Deployment
 
@@ -226,7 +238,7 @@ For detailed Docker documentation, see [DOCKER.md](DOCKER.md) and [DOCKER_QUICKS
 
 ## Version
 
-2026.1.0 - Built with Angular 17+
+2026.1.0 - Built with Angular 19.2
 
 ## License
 

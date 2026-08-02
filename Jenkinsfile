@@ -26,6 +26,24 @@ pipeline {
                 }
             }
         */
+        stage('Install') {
+            steps {
+                sh 'npm ci --no-audit --no-fund'
+            }
+        }
+        stage('Lint') {
+            steps {
+                // Fails on errors only; existing warnings do not break the build.
+                sh 'npm run lint'
+            }
+        }
+        stage('Test') {
+            steps {
+                // The Docker build does not run tests, so this is the only place
+                // the suite executes. ChromeHeadlessCI runs without a sandbox.
+                sh 'npm run test:ci'
+            }
+        }
         stage('Build and Push Docker Image') {
             steps {
                 script {

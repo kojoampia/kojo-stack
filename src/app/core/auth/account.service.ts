@@ -17,15 +17,15 @@ export class AccountService {
   private readonly authenticationState = new ReplaySubject<Account | null>(1);
   private accountCache$?: Observable<Account | null>;
 
-  save(account: Account): Observable<{}> {
+  save(account: Account): Observable<object> {
     return this.http.post(SERVER_API_URL + '/api/v1/account', account);
   }
 
-  update(account: Account): Observable<{}> {
+  update(account: Account): Observable<object> {
     return this.http.put(SERVER_API_URL + '/api/v1/account', account);
   }
 
-  changePassword(currentPassword: string, newPassword: string): Observable<{}> {
+  changePassword(currentPassword: string, newPassword: string): Observable<object> {
     return this.http.post(SERVER_API_URL + '/api/v1/account/change-password', { currentPassword, newPassword });
   }
 

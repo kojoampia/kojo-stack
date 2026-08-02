@@ -20,17 +20,29 @@ src/app/management/
 │   ├── setting-dashboard.component.html
 │   └── setting-dashboard.component.scss
 ├── documentation-dashboard/
-│   └── documentation-dashboard.component.ts (placeholder)
+│   ├── documentation-dashboard.component.ts
+│   ├── documentation-dashboard.component.html
+│   └── documentation-dashboard.component.scss
 ├── experience-dashboard/
-│   └── experience-dashboard.component.ts (placeholder)
+│   ├── experience-dashboard.component.ts
+│   ├── experience-dashboard.component.html
+│   └── experience-dashboard.component.scss
 ├── skill-dashboard/
-│   └── skill-dashboard.component.ts (placeholder)
+│   ├── skill-dashboard.component.ts
+│   ├── skill-dashboard.component.html
+│   └── skill-dashboard.component.scss
 ├── project-dashboard/
-│   └── project-dashboard.component.ts (placeholder)
+│   ├── project-dashboard.component.ts
+│   ├── project-dashboard.component.html
+│   └── project-dashboard.component.scss
 ├── inquiry-dashboard/
-│   └── inquiry-dashboard.component.ts (placeholder)
+│   ├── inquiry-dashboard.component.ts
+│   ├── inquiry-dashboard.component.html
+│   └── inquiry-dashboard.component.scss
 ├── metric-dashboard/
-│   └── metric-dashboard.component.ts (placeholder)
+│   ├── metric-dashboard.component.ts
+│   ├── metric-dashboard.component.html
+│   └── metric-dashboard.component.scss
 ├── model-dashboard-base.component.ts (base class)
 └── management.routes.ts (routing configuration)
 ```
@@ -41,7 +53,7 @@ src/app/management/
 - **Purpose**: Main management portal with navigation to all model dashboards
 - **Features**:
   - Grid-based navigation menu
-  - 8 dashboard tiles (one for each model)
+  - One dashboard tile per model (12 in total)
   - Color-coded cards with icons
   - Responsive design (mobile-friendly)
   - Hover effects and animations
@@ -67,33 +79,27 @@ src/app/management/
 
 ### 4. Documentation Dashboard (`documentation-dashboard`)
 - **Model**: Documentation
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ### 5. Experience Dashboard (`experience-dashboard`)
 - **Model**: Experience (work experience)
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ### 6. Skill Dashboard (`skill-dashboard`)
 - **Model**: TechSkill (technical skills)
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ### 7. Project Dashboard (`project-dashboard`)
 - **Model**: Project
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ### 8. Inquiry Dashboard (`inquiry-dashboard`)
 - **Model**: Inquiry
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ### 9. Metric Dashboard (`metric-dashboard`)
 - **Model**: Metric (system metrics)
-- **Status**: Placeholder (ready for implementation)
-- **Template**: HTML template included in component
+- **Status**: Implemented (list / create / update / delete with its own template)
 
 ## Routing Configuration
 
@@ -166,12 +172,15 @@ Services are injected via Angular's DI and used for:
 | Admin Dashboard | ✅ | - | - | - | Complete |
 | Profile Dashboard | ✅ | ✅ | ✅ | ✅ | Complete |
 | Settings Dashboard | ✅ | ✅ | ✅ | ✅ | Complete |
-| Documentation | ✅ | ✅ | ✅ | ✅ | Placeholder |
-| Experience | ✅ | ✅ | ✅ | ✅ | Placeholder |
-| Skills | ✅ | ✅ | ✅ | ✅ | Placeholder |
-| Projects | ✅ | ✅ | ✅ | ✅ | Placeholder |
-| Inquiries | ✅ | ✅ | ✅ | ✅ | Placeholder |
-| Metrics | ✅ | ✅ | ✅ | ✅ | Placeholder |
+| Account Dashboard | ✅ | ✅ | ✅ | ✅ | Complete |
+| Education Dashboard | ✅ | ✅ | ✅ | ✅ | Complete |
+| KPI Dashboard | ✅ | ✅ | ✅ | ✅ | Complete |
+| Documentation | ✅ | ✅ | ✅ | ✅ | Complete |
+| Experience | ✅ | ✅ | ✅ | ✅ | Complete |
+| Skills | ✅ | ✅ | ✅ | ✅ | Complete |
+| Projects | ✅ | ✅ | ✅ | ✅ | Complete |
+| Inquiries | ✅ | ✅ | ✅ | ✅ | Complete |
+| Metrics | ✅ | ✅ | ✅ | ✅ | Complete |
 
 ## How to Use
 
@@ -182,26 +191,26 @@ Services are injected via Angular's DI and used for:
 4. Click "Edit" to modify existing items
 5. Click "Delete" to remove items (with confirmation)
 
-### Next Steps to Complete Placeholders
+### Adding a New Model Dashboard
 
-For each placeholder dashboard, follow this pattern:
+Follow the pattern the existing twelve dashboards use:
 
 1. **Import Services**: Import the appropriate service (e.g., DocumentationService)
 2. **Define Form Fields**: Update formData with model-specific fields
 3. **Implement CRUD**: Hook up service methods to component methods
 4. **Update Template**: Customize the table columns and form fields
 5. **Style**: Add component-specific styles as needed
+6. **Register the route** in `management.routes.ts`
 
-Example for Documentation Dashboard:
 ```typescript
-// Import
-import { DocumentationService } from '@app/core/services/documentation.service';
-
 // Inject
-constructor(private docService: DocumentationService) {}
+private readonly docService = inject(DocumentationService);
 
 // Implement CRUD in loadItems(), saveItem(), confirmDelete()
 ```
+
+> `ModelDashboardBase` is still untyped (`any[]`/`any`). Converting it to an
+> abstract generic class is tracked as G12 in `plan.md`.
 
 ## Responsive Design
 
@@ -212,7 +221,7 @@ All dashboards are fully responsive:
 
 ## Browser Compatibility
 
-Built with Angular 17+ standalone components:
+Built with Angular 19 standalone components:
 - Chrome/Edge (latest)
 - Firefox (latest)
 - Safari (latest)
@@ -220,10 +229,11 @@ Built with Angular 17+ standalone components:
 
 ## Build Status
 
-✅ **Angular Build**: SUCCESS
-- Bundle size: 291.57 kB (main)
-- All components compile without errors
-- Standalone components properly configured
+Verify with `npm run build:prod`, `npm run test:ci` and `npm run lint`.
+
+Note: the production build currently exceeds its 1 MB initial-bundle budget
+(~1.12 MB) because every management dashboard is eagerly imported. See G11 in
+`plan.md`.
 
 ## Files Created
 

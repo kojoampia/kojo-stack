@@ -5,7 +5,7 @@ import { ProjectService } from '@app/core/services';
 import { ConsultingInquiry } from '@app/core/models';
 import { ProjectType } from '@app/core/models/project.model';
 
-declare var paypal: any;
+declare let paypal: any;
 
 @Component({
   selector: 'app-hire',
