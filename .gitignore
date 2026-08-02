@@ -27,3 +27,10 @@ angular.json.bak
 # Development
 npm-debug.log*
 yarn-error.log*
+
+# Runtime logs. A committed application log previously leaked the admin
+# credential into this repository's history. Log files are never source.
+# Note this ignores log files rather than the logs/ directory itself, so
+# logs/GEMINI.md stays trackable.
+*.log
+logs/*.log
