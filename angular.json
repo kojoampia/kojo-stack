@@ -27,9 +27,13 @@
             "assets": [
               {
                 "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "*.{png,ico,json,webmanifest}",
                 "input": "src/",
-                "output": "/",
-                "ignore": ["**/*.ts"]
+                "output": "/"
               }
             ],
             "styles": [

@@ -70,4 +70,47 @@ describe('ProjectService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+
+  describe('caching', () => {
+    it('serves a second reader from cache instead of refetching', () => {
+      service.getProjects().subscribe();
+      httpMock.expectOne(apiUrl).flush([project]);
+
+      let second: Project[] | undefined;
+      service.getProjects().subscribe(p => (second = p));
+
+      // No outstanding request: the value came from the replayed cache.
+      httpMock.verify();
+      expect(second).toEqual([project]);
+    });
+
+    it('refetches after a create invalidates the cache', () => {
+      service.getProjects().subscribe();
+      httpMock.expectOne(apiUrl).flush([project]);
+
+      service.addProject(project).subscribe();
+      httpMock.expectOne(r => r.method === 'POST').flush(project);
+
+      service.getProjects().subscribe();
+      const refetch = httpMock.expectOne(apiUrl);
+      expect(refetch.request.method).toBe('GET');
+      refetch.flush([project]);
+    });
+
+    it('refetches after a delete invalidates the cache', () => {
+      service.getProjects().subscribe();
+      httpMock.expectOne(apiUrl).flush([project]);
+
+      service.deleteProject('p-1').subscribe();
+      httpMock.expectOne(`${apiUrl}/p-1`).flush(null);
+
+      let after: Project[] | undefined;
+      service.getProjects().subscribe(p => (after = p));
+      const refetch = httpMock.expectOne(apiUrl);
+      expect(refetch.request.method).toBe('GET');
+      refetch.flush([]);
+
+      expect(after).toEqual([]);
+    });
+  });
 });

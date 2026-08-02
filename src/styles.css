@@ -1,3 +1,18 @@
+/* Self-hosted Inter, latin subset, only the weights this app uses.
+   Previously fetched from fonts.googleapis.com as a render-blocking <link> in
+   index.html requesting all nine weights. Serving from our own origin removes a
+   third-party dependency from the critical path. */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-700.css';
+
+/* Self-hosted Font Awesome, previously a render-blocking <link> to cdnjs. */
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';
+@import '@fortawesome/fontawesome-free/css/regular.min.css';
+@import '@fortawesome/fontawesome-free/css/brands.min.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

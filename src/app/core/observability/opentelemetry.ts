@@ -69,16 +69,44 @@ export function initializeOpenTelemetry(): void {
   loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(logExporter));
   logs.setGlobalLoggerProvider(loggerProvider);
 
+  // Only propagate the traceparent header to our own API. The previous [/./]
+  // matched every URL, which added the header to cross-origin requests and so
+  // turned otherwise simple requests into preflighted ones - an extra OPTIONS
+  // round trip on every call, and an outright failure for any third-party host
+  // whose CORS policy does not allow the header.
+  const propagateTraceHeaderCorsUrls = buildPropagationAllowlist();
+
+  // Telemetry export must not be traced by the instrumentation that produces it,
+  // or a failing collector generates spans describing its own failed exports.
+  const ignoreUrls = [/\/v1\/(traces|metrics|logs)$/, /\/otlp\//];
+
   registerInstrumentations({
     instrumentations: [
       new DocumentLoadInstrumentation(),
       new UserInteractionInstrumentation(),
       new FetchInstrumentation({
-        propagateTraceHeaderCorsUrls: [/./]
+        propagateTraceHeaderCorsUrls,
+        ignoreUrls
       }),
       new XMLHttpRequestInstrumentation({
-        propagateTraceHeaderCorsUrls: [/./]
+        propagateTraceHeaderCorsUrls,
+        ignoreUrls
       })
     ]
   });
+}
+
+/**
+ * Hosts that should receive the traceparent header. Same-origin requests never
+ * need CORS, so this only matters when the API is served from another origin -
+ * in production apiUrl is empty and everything is same-origin via the nginx
+ * /api proxy.
+ */
+function buildPropagationAllowlist(): RegExp[] {
+  const apiUrl = environment.apiUrl;
+  if (!apiUrl) {
+    return [];
+  }
+  const escaped = apiUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return [new RegExp(`^${escaped}`)];
 }
