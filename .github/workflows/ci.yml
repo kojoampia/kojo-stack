@@ -1,8 +1,9 @@
 name: CI
 
-# Mirrors the Jenkinsfile: verify first, then build and publish the image.
-# The Docker build runs `npm run build:prod` but no tests, so the verify job
-# below is the only thing standing between a regression and a published image.
+# Build-and-test gate for pull requests and the default branch. Publishing the deployable
+# image is a separate concern (.github/workflows/publish.yml) that runs only on main and tags.
+#
+# The Dockerfile runs build:prod but no tests, so this is the only place they execute.
 on:
   push:
     branches: [main]
@@ -14,9 +15,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  REGISTRY: docker.jojoaddison.net
-  IMAGE_NAME: kojo-stack
 
 jobs:
   verify:
@@ -50,61 +48,3 @@ jobs:
           name: dist
           path: dist/kojo-stack/browser
           retention-days: 7
-
-  publish:
-    name: Build and push image
-    needs: verify
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      # The registry is self-hosted. If these secrets are absent the job stops
-      # here with a clear message rather than failing deep inside a push.
-      - name: Check registry credentials
-        env:
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
-          if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
-            echo "::error::REGISTRY_USERNAME and REGISTRY_PASSWORD repository secrets are not set."
-            echo "::error::Add them under Settings > Secrets and variables > Actions."
-            exit 1
-          fi
-
-      - name: Derive version tag
-        id: version
-        run: echo "value=$(date -u +%Y.%m).${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.value }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Summary
-        run: |
-          {
-            echo "### Published"
-            echo ""
-            echo '`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.value }}`'
-            echo ""
-            echo "Also tagged \`sha-${{ github.sha }}\` and \`latest\`."
-            echo ""
-            echo "The compose stacks in kojo-stack-ci pin explicit tags, so nothing"
-            echo "deploys until that pin is updated."
-          } >> "$GITHUB_STEP_SUMMARY"
